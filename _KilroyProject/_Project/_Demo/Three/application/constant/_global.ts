@@ -16,12 +16,12 @@ export interface Vector { // 向量
 export default class Global {
     public static readonly $: typeof _Global.$ = _Global.$;
     
-    public static readonly W: Window = _Global.W;
-    public static readonly D: Document = _Global.D;
-    public static readonly B: HTMLElement = _Global.B;
-    public static readonly $W: typeof Global.$ = _Global.$W;
-    public static readonly $D: typeof Global.$ = _Global.$D;
-    public static readonly $B: typeof Global.$ = _Global.$B;
+    public static readonly Window: Window = _Global.Window;
+    public static readonly Document: Document = _Global.Document;
+    public static readonly Body: HTMLElement = _Global.Body;
+    public static readonly $Window: typeof Global.$ = _Global.$Window;
+    public static readonly $Document: typeof Global.$ = _Global.$Document;
+    public static readonly $Body: typeof Global.$ = _Global.$Body;
     
     public static readonly FN: typeof _Global.FN = _Global.FN;
     public static readonly Algorithm: typeof _Global.Algorithm = _Global.Algorithm;
@@ -29,9 +29,6 @@ export default class Global {
     public static readonly Crypto: typeof _Global.Crypto = _Global.Crypto;
     public static readonly Ajax: typeof _Global.Ajax = _Global.Ajax;
     
-    public static readonly Preload: typeof _Global.Preload = _Global.Preload;
-    public static readonly Popup: typeof _Global.Popup = _Global.Popup;
-    public static readonly Flip: typeof _Global.Flip = _Global.Flip;
     public static readonly Share: typeof _Global.Share = _Global.Share;
     public static readonly Authorize: typeof _Global.Authorize = _Global.Authorize;
     
@@ -39,8 +36,8 @@ export default class Global {
     public static readonly Stats: typeof _Global.Stats = _Global.Stats;
     public static readonly GUI: typeof _Global.GUI = _Global.GUI;
     
-    public static Width: number = Global.$W.width();
-    public static Height: number = Global.$W.height();
+    public static Width: number = Global.$Window.width();
+    public static Height: number = Global.$Window.height();
     public static Aspect: number = Global.Width / Global.Height;
     public static readonly $Application: typeof Global.$ = GlobalFunction.getApplication();
     public static readonly $Root: typeof Global.$ = Global.$Application.children('.container');

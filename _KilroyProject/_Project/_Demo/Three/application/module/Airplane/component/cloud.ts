@@ -78,11 +78,8 @@ export default class Cloud implements Component {
             v.mesh.rotateX(cycleS);
             v.mesh.rotateY(-cycleS);
             v.mesh.rotateZ(cycleS);
-            if (v.cycle >= Math.PI * (1 - _this.range)) {
-                // _this.instance.remove(v.mesh);
-                return false;
-            }
-            return true;
+            
+            return v.cycle < Math.PI * (1 - _this.range);
         });
     }
     

@@ -1,4 +1,4 @@
-import { $, $W, $B } from '../../../../_Base/Asset/_Global/_global';
+import { $, $Window, $Body } from '../../../../_Base/Asset/_Global/_global';
 import Global, { Vector } from './_global';
 
 /**
@@ -15,10 +15,10 @@ export default class GlobalFunction {
         
         let $application = $('#' + name);
         
-        ($application.length > 0) && $B.removeChild($application);
+        ($application.length > 0) && $Body.removeChild($application);
         $application = $(`<div id="${ name }" class="${ name }" data-name="${ name }"></div>`);
         $application.append($(`<div class="container"></div>`));
-        $B.append($application);
+        $Body.prepend($application);
         
         return $application
     }
@@ -62,8 +62,8 @@ export default class GlobalFunction {
     public static updateSize(): void {
         const _this = this;
         
-        Global.Width = Global.$W.width();
-        Global.Height = Global.$W.height();
+        Global.Width = Global.$Window.width();
+        Global.Height = Global.$Window.height();
         Global.Aspect = Global.Width / Global.Height;
         Global.Center = {
             x: Global.$Root.width() / 2,
@@ -80,28 +80,28 @@ export default class GlobalFunction {
         const _this = this;
         
         // Mouse
-        $W.bind('mousemove', (e: MouseEvent) => {
+        $Window.bind('mousemove', (e: MouseEvent) => {
             Global.Focus.x = e.clientX;
             Global.Focus.y = e.clientY;
         });
         
         // Touch
-        $W.bind('touchstart', (e: TouchEvent) => {
+        $Window.bind('touchstart', (e: TouchEvent) => {
             Global.Focus.x = e.touches[0].clientX;
             Global.Focus.y = e.touches[0].clientY;
         });
-        $W.bind('touchmove', (e: TouchEvent) => {
+        $Window.bind('touchmove', (e: TouchEvent) => {
             Global.Focus.x = e.touches[0].clientX;
             Global.Focus.y = e.touches[0].clientY;
         });
         
         if (isReset) {
-            $W.bind('mouseout', (e: MouseEvent) => {
+            $Window.bind('mouseout', (e: MouseEvent) => {
                 const center = _this.getDomCenter();
                 Global.Focus.x = center.x;
                 Global.Focus.y = center.y;
             });
-            $W.bind('touchend', (e: TouchEvent) => {
+            $Window.bind('touchend', (e: TouchEvent) => {
                 const center = _this.getDomCenter();
                 Global.Focus.x = center.x;
                 Global.Focus.y = center.y;
