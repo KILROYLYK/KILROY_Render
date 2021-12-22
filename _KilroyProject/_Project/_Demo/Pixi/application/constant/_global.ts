@@ -1,14 +1,10 @@
 import _Global from '../../../../_Base/Asset/_Global/_global';
 
 import './style';
-import GlobalConfig from './config'; // 配置
-import GlobalFunction from './function'; // 函数
-import GlobalStage from './stage'; // 场景
-
-export interface Vector { // 向量
-    x: number, // X轴
-    y: number // Y轴
-}
+import { Vector } from '../interface/_public';
+import GlobalConfig from './config';
+import GlobalFunction from './function';
+import GlobalStage from './stage';
 
 /**
  * 全局
