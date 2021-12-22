@@ -77,7 +77,6 @@ export default class Stage implements _Stage {
                 },
                 finish(data: any): void {
                     _this.resource.data = data;
-                    console.log(data);
                     
                     _this.create();
                     _this.init();
