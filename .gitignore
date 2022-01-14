@@ -7,6 +7,7 @@
 /tslint.json
 /package.json
 /package-lock.json
+/yarn.lock
 /webpack.config.js
 /.idea
 /node_modules
