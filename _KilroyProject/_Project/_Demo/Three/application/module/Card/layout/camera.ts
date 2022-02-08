@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
 
 /**

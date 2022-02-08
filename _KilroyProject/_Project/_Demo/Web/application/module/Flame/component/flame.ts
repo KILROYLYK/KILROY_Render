@@ -80,13 +80,13 @@ export default class Flame implements Component {
      */
     public update(isResize: boolean = false): void {
         const _this = this,
-            side = Global.FN.calc.randomWeight(_this.side),
+            side = Global.Function.Calc.randomWeight(_this.side),
             brother = _this.brother[side];
         
         _this.drawFlame();
         
         if (brother && brother.depth < _this.depth) {
-            const rand = Global.FN.calc.random(-1, 5);
+            const rand = Global.Function.Calc.random(-1, 5);
             _this.depth = brother.depth + rand;
         } else {
             _this.depth += 1;

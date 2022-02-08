@@ -1,4 +1,4 @@
-import Global from '../../application/constant/_global';
+import Global from '../../../2/_global';
 
 declare global {
     interface Window {

@@ -31,7 +31,7 @@ export default class Camera implements Layout {
         const _this = this;
         
         _this.instance = new THREE.PerspectiveCamera(
-            60, Global.Function.getDomAspect(), 1, 2000
+            60, Global.FN.getDomAspect(), 1, 2000
         );
         _this.instance.position.set(0, 50, 200);
         
@@ -59,7 +59,7 @@ export default class Camera implements Layout {
         _this.controller.update();
         
         if (isResize) { // 屏幕变化
-            _this.instance.aspect = Global.Function.getDomAspect();
+            _this.instance.aspect = Global.FN.getDomAspect();
             _this.instance.updateProjectionMatrix();
         }
     }
@@ -71,7 +71,7 @@ export default class Camera implements Layout {
     private createController(): void {
         const _this = this;
         
-        _this.controller = new OrbitControls(_this.instance, Global.$Root[0]);
+        _this.controller = new OrbitControls(_this.instance, Global.Root as HTMLElement);
         _this.controller.target = new THREE.Vector3(0, 10, 0);
         _this.controller.enabled = true;
         _this.controller.enableDamping = true;

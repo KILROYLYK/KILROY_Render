@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise';
 
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
 
 /**

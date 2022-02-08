@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import Global from '../constant/_global';
+import Global from '../../../1/_global';
 import Controller from '../interface/controller';
 
 export interface LookConfig { // 控制器配置

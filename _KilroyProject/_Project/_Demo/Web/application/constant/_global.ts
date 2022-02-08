@@ -1,49 +1,35 @@
 import _Global from '../../../../_Base/Asset/_Global/_global';
 
+import { Vector2 } from '../interface/_public';
+import Config from './config';
+import FN from './function';
+import Stage from './stage';
+
 import './style';
-import { Vector } from '../interface/_public';
-import GlobalConfig from './config';
-import GlobalFunction from './function';
-import GlobalStage from './stage';
 
 /**
  * 全局
  */
 export default class Global {
-    public static readonly $: typeof _Global.$ = _Global.$;
-    
-    public static readonly Window: Window = _Global.Window;
-    public static readonly Document: Document = _Global.Document;
-    public static readonly Body: HTMLElement = _Global.Body;
-    public static readonly $Window: typeof Global.$ = _Global.$Window;
-    public static readonly $Document: typeof Global.$ = _Global.$Document;
-    public static readonly $Body: typeof Global.$ = _Global.$Body;
-    
-    public static readonly FN: typeof _Global.FN = _Global.FN;
+    public static readonly Function: typeof _Global.Function = _Global.Function;
     public static readonly Algorithm: typeof _Global.Algorithm = _Global.Algorithm;
-    public static readonly Adaptation: typeof _Global.Adaptation = _Global.Adaptation;
     public static readonly Crypto: typeof _Global.Crypto = _Global.Crypto;
-    public static readonly Ajax: typeof _Global.Ajax = _Global.Ajax;
     
-    public static readonly Share: typeof _Global.Share = _Global.Share;
-    public static readonly Authorize: typeof _Global.Authorize = _Global.Authorize;
+    public static readonly Adaptation: typeof _Global.Adaptation = _Global.Adaptation;
     
     public static readonly Console: typeof _Global.Console = _Global.Console;
     public static readonly Stats: typeof _Global.Stats = _Global.Stats;
     public static readonly GUI: typeof _Global.GUI = _Global.GUI;
     
-    public static Width: number = Global.$Window.width();
-    public static Height: number = Global.$Window.height();
+    public static readonly Application: Element = FN.getApplication();
+    public static readonly Root: Element = Global.Application.getElementsByClassName('container')[0];
+    public static Width: number = document.body.clientWidth;
+    public static Height: number = document.body.clientHeight;
     public static Aspect: number = Global.Width / Global.Height;
-    public static readonly $Application: typeof Global.$ = GlobalFunction.getApplication();
-    public static readonly $Root: typeof Global.$ = Global.$Application.children('.container');
-    public static Center: Vector = { // 中心
-        x: Global.$Root.width() / 2,
-        y: Global.$Root.height() / 2
-    };
-    public static Focus: Vector = Global.Center; // 焦点
+    public static Center: Vector2 = { x: 0, y: 0 }; // 中心
+    public static Focus: Vector2 = { x: 0, y: 0 }; // 焦点
     
-    public static readonly Config: typeof GlobalConfig = GlobalConfig; // 配置
-    public static readonly Function: typeof GlobalFunction = GlobalFunction; // 函数
-    public static readonly Stage: typeof GlobalStage = GlobalStage; // 场景
+    public static readonly Config: typeof Config = Config; // 配置
+    public static readonly FN: typeof FN = FN; // 函数
+    public static readonly Stage: typeof Stage = Stage; // 场景
 }

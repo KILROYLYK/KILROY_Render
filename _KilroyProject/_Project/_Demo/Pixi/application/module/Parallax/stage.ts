@@ -1,8 +1,8 @@
 // @ts-ignore
 import * as PIXI from 'pixi.js';
 
-import Global from '../../constant/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Background from './component/background';
 import Loader, { ResourceConfig } from '../../controller/loader';
@@ -14,7 +14,7 @@ import '../../../resource/css/Parallax/index.less';
  */
 export default class Stage implements _Stage {
     private isInit: boolean = false; // 是否初始化
-    private readonly resource: any = { // 资源
+    private readonly resource = { // 资源
         path: [ // 地址
             {
                 name: 'image_bg',
@@ -41,19 +41,17 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(
-            _this.resource.path,
+        this.controller.loader = new Loader(
+            this.resource.path,
             {
-                loaded(index: number, total: number, progress: number): void {
+                loaded: (index: number, total: number, progress: number): void => {
                     console.log(`加载进度：${ index } ${ total } ${ progress }`);
                 },
-                finish(data: any): void {
-                    _this.resource.data = data;
+                finish: (data: any): void => {
+                    this.resource.data = data;
                     
-                    _this.create();
-                    _this.init();
+                    this.create();
+                    this.init();
                 }
             }
         );
@@ -63,23 +61,25 @@ export default class Stage implements _Stage {
      * 创建
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.app = new PIXI.Application({
+        this.app = new PIXI.Application({
             width: Global.Width,
             height: Global.Height,
             backgroundColor: 0x222222,
             backgroundAlpha: 0,
-            resizeTo: Global.$Root[0]
+            resizeTo: Global.Root
         });
-        Global.$Root.append(_this.app.view);
         
-        _this.container = new PIXI.Container();
-        _this.app.stage.addChild(_this.container);
+        console.log(Global.Application);
+        console.log(Global.Root);
+        Global.Root.append(this.app.view);
         
-        _this.component.background = new Background(
-            _this.container, {
+        this.container = new PIXI.Container();
+        this.app.stage.addChild(this.container);
+        
+        this.component.background = new Background(
+            this.container, {
                 bg: resource.image_bg,
                 bg_shadow: resource.image_bg_shadow,
             });
@@ -89,11 +89,9 @@ export default class Stage implements _Stage {
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.isInit = true;
         
-        _this.isInit = true;
-        
-        Global.Function.showCursor(false);
+        Global.FN.showCursor(false);
     }
     
     /**
@@ -101,9 +99,7 @@ export default class Stage implements _Stage {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.isInit) return;
+        if (!this.isInit) return;
         
         // _this.component.background.update(isResize);
     }

@@ -101,8 +101,8 @@ export default class Particle implements Component {
      */
     private clearCanvas(): void {
         const _this = this;
-        
-        _this.context.clearRect(0, 0, Global.$Root.width(), Global.$Root.height());
+    
+        _this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
     }
     
     /**
@@ -111,9 +111,9 @@ export default class Particle implements Component {
      */
     public writeText(text: string): void {
         const _this = this,
-            width = Global.$Root.width(),
-            height = Global.$Root.height(),
-            center = Global.Function.getDomCenter(),
+            width = Global.Root.clientWidth,
+            height = Global.Root.clientHeight,
+            center = Global.FN.getDomCenter(),
             cList = _this.list,
             list = [] as any[];
         

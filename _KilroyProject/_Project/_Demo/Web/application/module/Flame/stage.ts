@@ -44,7 +44,7 @@ export default class Stage implements _Stage {
     };
     private flame: any = { // 火焰
         shape: 'round' as 'square' | 'round', // 形状
-        size: Global.FN.agent.client() === 'PC' ? 10 : 6, // 尺寸
+        size: Global.Function.Agent.client() === 'PC' ? 10 : 6, // 尺寸
         table: [], // 表格
         list: [] // 列表
     };
@@ -73,10 +73,10 @@ export default class Stage implements _Stage {
     private create(): void {
         const _this = this;
         
-        _this.canvas = Global.Document.createElement('canvas');
-        _this.canvas.width = Global.$Root.width();
-        _this.canvas.height = Global.$Root.height();
-        Global.$Root.append(_this.canvas);
+        _this.canvas = document.createElement('canvas');
+        _this.canvas.width = Global.Root.clientWidth;
+        _this.canvas.height = Global.Root.clientHeight;
+        Global.Root.append(_this.canvas);
         
         _this.context = _this.canvas.getContext('2d');
         _this.gradient = _this.context.createLinearGradient(0, 0, _this.depth, 0);
@@ -91,13 +91,13 @@ export default class Stage implements _Stage {
         
         _this.isInit = true;
         
-        Global.FN.resize(() => {
+        Global.Function.Resize(() => {
             _this.update(true);
             _this.initFlame();
         });
-        Global.Function.updateFrame(() => {
+        Global.FN.updateFrame(() => {
             _this.update();
-        }, 40);
+        });
         
         _this.initColor();
         _this.initFlame();
@@ -116,8 +116,8 @@ export default class Stage implements _Stage {
         if (!_this.isInit) return;
         
         if (isResize) {
-            _this.canvas.width = Global.$Root.width();
-            _this.canvas.height = Global.$Root.height();
+            _this.canvas.width = Global.Root.clientWidth;
+            _this.canvas.height = Global.Root.clientHeight;
         }
         
         _this.clean();
@@ -141,7 +141,7 @@ export default class Stage implements _Stage {
     private clean(): void {
         const _this = this;
         
-        _this.context.clearRect(0, 0, Global.$Root.width(), Global.$Root.height());
+        _this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
     }
     
     //---------- 生命周期 End ----------//
@@ -179,8 +179,8 @@ export default class Stage implements _Stage {
      */
     private initFlame(): void {
         const _this = this,
-            rowTotal = Math.ceil(Global.$Root.height() / _this.flame.size),
-            columnTotal = Math.ceil(Global.$Root.width() / _this.flame.size);
+            rowTotal = Math.ceil(Global.Root.clientHeight / _this.flame.size),
+            columnTotal = Math.ceil(Global.Root.clientWidth / _this.flame.size);
         
         _this.flame.list = [];
         _this.flame.table = Array(rowTotal).fill(Array(columnTotal).fill(null))
@@ -205,8 +205,8 @@ export default class Stage implements _Stage {
                 });
             });
         
-        Global.FN.array.traversing(_this.flame.table, (i: number, v: Flame[]) => {
-            Global.FN.array.traversing(v, (ii: number, vv: Flame) => {
+        Global.Function.Array.traversing(_this.flame.table, (i: number, v: Flame[]) => {
+            Global.Function.Array.traversing(v, (ii: number, vv: Flame) => {
                 vv.setBrother(
                     _this.flame.table[i - 1] && _this.flame.table[i - 1][ii],
                     _this.flame.table[i][ii - 1],

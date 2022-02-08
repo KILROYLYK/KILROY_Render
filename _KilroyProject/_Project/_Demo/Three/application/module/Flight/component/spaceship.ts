@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
 
 export interface Texture { // 纹理

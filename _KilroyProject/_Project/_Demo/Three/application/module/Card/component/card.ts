@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import Component from '../../../interface/component';
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Skull from './skull';
 
 // @ts-ignore

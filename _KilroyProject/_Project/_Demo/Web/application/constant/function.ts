@@ -1,73 +1,57 @@
-import { $, $Window, $Body } from '../../../../_Base/Asset/_Global/_global';
-import Global, { Vector } from './_global';
+import { Vector2, Vector3 } from '../interface/_public';
+import Global from './_global';
 
 /**
  * 函数
  */
-export default class GlobalFunction {
+export default class FN {
     /**
      * 获取Application节点
-     * @return {$} 节点
+     * @return {Element} 节点
      */
-    public static getApplication(): typeof $ {
-        const _this = this,
-            name = 'application';
+    public static getApplication(): Element {
+        const id = 'application',
+            domContainer = document.createElement('div');
         
-        let $application = $('#' + name);
+        let domApplication = document.getElementById(id);
         
-        ($application.length > 0) && $Body.removeChild($application);
-        $application = $(`<div id="${ name }" class="${ name }" data-name="${ name }"></div>`);
-        $application.append($(`<div class="container"></div>`));
-        $Body.prepend($application);
+        domApplication && document.body.removeChild(domApplication);
+        domApplication = document.createElement('div');
+        domApplication.id = id;
+        domApplication.classList.add(id);
+        domContainer.classList.add('container');
+        domApplication.prepend(domContainer);
+        document.body.prepend(domApplication);
         
-        return $application
+        return domApplication;
     }
     
     /**
      * 获取节点宽高比
-     * @param {$} $dom 节点
+     * @param {Element} dom 节点
      * @return {number} 宽高比
      */
-    public static getDomAspect($dom?: typeof $): number {
-        const _this = this;
-        
-        return $dom
-            ? $dom.width() / $dom.height()
-            : Global.$Root.width() / Global.$Root.height();
+    public static getDomAspect(dom?: Element): number {
+        return dom
+            ? dom.clientWidth / dom.clientHeight
+            : Global.Root.clientWidth / Global.Root.clientHeight;
     }
     
     /**
      * 获取中心位置
-     * @param {$} $dom 节点
+     * @param {Element} dom 节点
      * @return {*} 中心位置
      */
-    public static getDomCenter($dom?: typeof $): Vector {
-        const _this = this;
-        
-        return $dom
+    public static getDomCenter(dom?: Element): Vector2 {
+        return dom
             ? {
-                x: $dom.width() / 2,
-                y: $dom.height() / 2
+                x: dom.clientWidth / 2,
+                y: dom.clientHeight / 2
             }
             : {
-                x: Global.$Root.width() / 2,
-                y: Global.$Root.height() / 2
+                x: Global.Root.clientWidth / 2,
+                y: Global.Root.clientHeight / 2
             };
-    }
-    
-    /**
-     * 更新宽高
-     */
-    public static updateSize(): void {
-        const _this = this;
-        
-        Global.Width = Global.$Window.width();
-        Global.Height = Global.$Window.height();
-        Global.Aspect = Global.Width / Global.Height;
-        Global.Center = {
-            x: Global.$Root.width() / 2,
-            y: Global.$Root.height() / 2
-        };
     }
     
     /**
@@ -75,32 +59,30 @@ export default class GlobalFunction {
      * @param {boolean} isReset 是否重置
      */
     public static updateFocus(isReset: boolean = true): void {
-        const _this = this;
-        
         // Mouse
-        $Window.bind('mousemove', (e: MouseEvent) => {
+        addEventListener('mousemove', (e: MouseEvent) => {
             Global.Focus.x = e.clientX;
             Global.Focus.y = e.clientY;
         });
         
         // Touch
-        $Window.bind('touchstart', (e: TouchEvent) => {
+        addEventListener('touchstart', (e: TouchEvent) => {
             Global.Focus.x = e.touches[0].clientX;
             Global.Focus.y = e.touches[0].clientY;
         });
-        $Window.bind('touchmove', (e: TouchEvent) => {
+        addEventListener('touchmove', (e: TouchEvent) => {
             Global.Focus.x = e.touches[0].clientX;
             Global.Focus.y = e.touches[0].clientY;
         });
         
         if (isReset) {
-            $Window.bind('mouseout', (e: MouseEvent) => {
-                const center = _this.getDomCenter();
+            addEventListener('mouseout', (e: MouseEvent) => {
+                const center = FN.getDomCenter();
                 Global.Focus.x = center.x;
                 Global.Focus.y = center.y;
             });
-            $Window.bind('touchend', (e: TouchEvent) => {
-                const center = _this.getDomCenter();
+            addEventListener('touchend', (e: TouchEvent) => {
+                const center = FN.getDomCenter();
                 Global.Focus.x = center.x;
                 Global.Focus.y = center.y;
             });
@@ -113,8 +95,6 @@ export default class GlobalFunction {
      * @param {number} frame 帧（0时使用动画帧模式）
      */
     public static updateFrame(callback: Function, frame: number = 0): void {
-        const _this = this;
-        
         if (!callback) return;
         
         callback();
@@ -124,7 +104,7 @@ export default class GlobalFunction {
             }, 1000 / frame);
         } else {
             requestAnimationFrame(() => {
-                _this.updateFrame(callback);
+                FN.updateFrame(callback);
             });
         }
     }
@@ -135,9 +115,7 @@ export default class GlobalFunction {
      * @param {*} targetP 目标位置
      * @param {number} ease 缓冲系数
      */
-    public static setEase(position: any, targetP: any, ease: number): void {
-        const _this = this;
-        
+    public static setEase(position: Vector3, targetP: Vector3, ease: number): void {
         position.x += (targetP.x - position.x) / ease;
         position.y += (targetP.y - position.y) / ease;
         position.z += (targetP.z - position.z) / ease;
@@ -148,8 +126,6 @@ export default class GlobalFunction {
      * @param {boolean} show 显示
      */
     public static showCursor(show: boolean = true): void {
-        const _this = this;
-        
-        $('html')[0].style.cursor = show ? 'default' : 'none';
+        document.body.style.cursor = show ? 'default' : 'none';
     }
 }

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import Component from '../../../interface/component';
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 
 // @ts-ignore
 import vertSkull from '../shader/vertSkull.shader';

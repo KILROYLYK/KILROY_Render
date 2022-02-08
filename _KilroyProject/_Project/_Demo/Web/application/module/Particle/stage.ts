@@ -33,10 +33,10 @@ export default class Stage implements _Stage {
     private create(): void {
         const _this = this;
         
-        _this.canvas = Global.Document.createElement('canvas');
-        _this.canvas.width = Global.$Root.width();
-        _this.canvas.height = Global.$Root.height();
-        Global.$Root.append(_this.canvas);
+        _this.canvas = document.createElement('canvas');
+        _this.canvas.width = Global.Root.clientWidth;
+        _this.canvas.height = Global.Root.clientHeight;
+        Global.Root.append(_this.canvas);
         
         _this.context = _this.canvas.getContext('2d');
         
@@ -50,15 +50,14 @@ export default class Stage implements _Stage {
         const _this = this;
         
         _this.isInit = true;
-        
-        Global.FN.resize(() => {
-            Global.Function.updateSize();
+    
+        Global.Function.Resize(() => {
             _this.update(true);
         });
-        Global.Function.updateFrame(() => {
+        Global.FN.updateFrame(() => {
             _this.update();
         });
-        Global.Function.updateFocus(false);
+        Global.FN.updateFocus(false);
         
         _this.component.particle.writeText('♥');
         _this.component.particle.writeText('KILROY');
@@ -74,8 +73,8 @@ export default class Stage implements _Stage {
         if (!_this.isInit) return;
         
         if (isResize) {
-            _this.canvas.width = Global.$Root.width();
-            _this.canvas.height = Global.$Root.height();
+            _this.canvas.width = Global.Root.clientWidth;
+            _this.canvas.height = Global.Root.clientHeight;
         }
         
         _this.component.particle.update(isResize);

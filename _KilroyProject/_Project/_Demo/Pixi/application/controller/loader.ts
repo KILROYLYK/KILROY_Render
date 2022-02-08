@@ -35,61 +35,54 @@ export default class Loader implements Controller {
      * @param {LoadConfig} config 配置
      */
     constructor(resourceList: ResourceConfig[] = [], config: LoadConfig = {}) {
-        const _this = this;
+        this.resourceList = resourceList;
+        this.total = this.resourceList.length;
+        this.loaded = config.loaded || null;
+        this.finish = config.finish || null;
         
-        _this.resourceList = resourceList;
-        _this.total = _this.resourceList.length;
-        _this.loaded = config.loaded || null;
-        _this.finish = config.finish || null;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
-        _this.loader = new PIXI.Loader();
+        this.loader = new PIXI.Loader();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.load();
+        this.load();
     }
     
     /**
      * 加载素材
      */
     private load(): void {
-        const _this = this,
-            length = _this.resourceList.length;
+        const length = this.resourceList.length;
         
         if (length === 0) {
-            _this.loaded && _this.loaded(0, 0, 100);
-            _this.finish && _this.finish(_this.dataList);
+            this.loaded && this.loaded(0, 0, 100);
+            this.finish && this.finish(this.dataList);
             return;
         }
         
-        _this.loader
-            .add(_this.resourceList)
+        this.loader
+            .add(this.resourceList)
             .use((resource: any, next: Function) => {
-                _this.finishTotal++;
-                _this.loaded && _this.loaded(
-                    _this.finishTotal, length,
-                    parseInt(String(_this.finishTotal / length * 100), 10)
+                this.finishTotal++;
+                this.loaded && this.loaded(
+                    this.finishTotal, length,
+                    parseInt(String(this.finishTotal / length * 100), 10)
                 );
                 next();
             })
             .load((loader: PIXI.Loader, dataList: Partial<Record<string, PIXI.LoaderResource>>) => {
-                _this.dataList = dataList;
-                _this.finish && _this.finish(_this.dataList);
+                this.dataList = dataList;
+                this.finish && this.finish(this.dataList);
             });
     }
 }

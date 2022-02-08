@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 // @ts-ignore
 import { Tween, Easing } from '/usr/local/lib/node_modules/@tweenjs/tween.js'; // 动效
 
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
 
 /**

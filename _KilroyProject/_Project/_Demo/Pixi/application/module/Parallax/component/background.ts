@@ -3,8 +3,9 @@ import * as PIXI from 'pixi.js';
 // @ts-ignore
 import { TweenMax, Sine, Ease } from '/usr/local/lib/node_modules/gsap';
 
-import Global from '../../../constant/_global';
+import { Vector2 } from '../../../interface/_interface';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 export interface TextureConfig { // 纹理配置
     bg: any // 背景
@@ -26,7 +27,7 @@ export default class Background implements Component {
     private height: number = 0; // 高
     private spriteB: PIXI.Sprite = null; // 背景
     private spriteBS: PIXI.Sprite = null; // 背景阴影
-    private readonly moveP: any = { // 移动位置
+    private readonly moveP: Vector2 = { // 移动位置
         x: 0,
         y: 0
     };
@@ -40,13 +41,11 @@ export default class Background implements Component {
      * @param {TextureConfig} texture 纹理
      */
     constructor(container: any, texture: TextureConfig) {
-        const _this = this;
+        this.container = container;
+        this.texture = texture;
         
-        _this.container = container;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -54,17 +53,16 @@ export default class Background implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            bg = _this.texture.bg,
-            bgShadow = _this.texture.bg_shadow;
+        const bg = this.texture.bg,
+            bgShadow = this.texture.bg_shadow;
         
-        _this.spriteB = new PIXI.Sprite(bg.texture);
-        _this.spriteBS = new PIXI.Sprite(bgShadow.texture);
-        _this.spriteBS.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+        this.spriteB = new PIXI.Sprite(bg.texture);
+        this.spriteBS = new PIXI.Sprite(bgShadow.texture);
+        this.spriteBS.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
         
-        _this.instance = new PIXI.filters.DisplacementFilter(_this.spriteBS);
+        this.instance = new PIXI.filters.DisplacementFilter(this.spriteBS);
         
-        _this.setSize();
+        this.setSize();
     }
     
     /**
@@ -72,14 +70,12 @@ export default class Background implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
+        this.container.addChild(this.spriteB);
+        this.container.addChild(this.spriteBS);
         
-        _this.container.addChild(_this.spriteB);
-        _this.container.addChild(_this.spriteBS);
-        
-        Global.$D.bind('mousemove', _this.animation.bind(_this));
-        Global.$D.bind('touchstart', _this.animation.bind(_this));
-        Global.$D.bind('touchmove', _this.animation.bind(_this));
+        document.addEventListener('mousemove', this.animation.bind(this));
+        document.addEventListener('touchstart', this.animation.bind(this));
+        document.addEventListener('touchmove', this.animation.bind(this));
     }
     
     /**
@@ -88,12 +84,10 @@ export default class Background implements Component {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
         if (isResize) {
-            _this.setSize();
+            this.setSize();
         }
     }
     
@@ -102,31 +96,30 @@ export default class Background implements Component {
      * @return {void}
      */
     private setSize(): void {
-        const _this = this,
-            ratio = Global.Function.getDomAspect(),
-            center = Global.Function.getDomCenter();
+        const ratio = Global.FN.getDomAspect(),
+            center = Global.FN.getDomCenter();
         
         switch (true) {
-            case ratio >= 1 && ratio >= _this.ratio:
-            case ratio <= 1 && ratio >= _this.ratio:
-                _this.width = Global.$Root.width() * 1.2;
-                _this.height = _this.width / _this.ratio;
+            case ratio >= 1 && ratio >= this.ratio:
+            case ratio <= 1 && ratio >= this.ratio:
+                this.width = Global.Root.clientWidth * 1.2;
+                this.height = this.width / this.ratio;
                 break;
-            case ratio >= 1 && ratio <= _this.ratio:
-            case ratio <= 1 && ratio <= _this.ratio:
+            case ratio >= 1 && ratio <= this.ratio:
+            case ratio <= 1 && ratio <= this.ratio:
             default:
-                _this.height = Global.$Root.height() * 1.2;
-                _this.width = _this.height * _this.ratio;
+                this.height = Global.Root.clientHeight * 1.2;
+                this.width = this.height * this.ratio;
                 break
         }
         
-        _this.spriteB.width = _this.width;
-        _this.spriteB.height = _this.height;
-        _this.spriteB.position.set(center.x - _this.width / 2, center.y - _this.height / 2);
+        this.spriteB.width = this.width;
+        this.spriteB.height = this.height;
+        this.spriteB.position.set(center.x - this.width / 2, center.y - this.height / 2);
         
-        _this.spriteBS.width = _this.width;
-        _this.spriteBS.height = _this.height;
-        _this.spriteBS.position.set(center.x - _this.width / 2, center.y - _this.height / 2);
+        this.spriteBS.width = this.width;
+        this.spriteBS.height = this.height;
+        this.spriteBS.position.set(center.x - this.width / 2, center.y - this.height / 2);
     }
     
     /**
@@ -135,23 +128,22 @@ export default class Background implements Component {
      * @return {void}
      */
     private animation(e: MouseEvent): void {
-        const _this = this,
-            centerP = Global.Function.getDomCenter(),
-            x = (Global.Focus.x - centerP.x) * _this.speed,
-            y = (Global.Focus.y - centerP.y) * _this.speed;
+        const centerP = Global.FN.getDomCenter(),
+            x = (Global.Focus.x - centerP.x) * this.speed,
+            y = (Global.Focus.y - centerP.y) * this.speed;
         
         if (Global.Focus.x === e.clientX &&
             Global.Focus.y === e.clientY) return;
         
         TweenMax
-            .to(_this.moveP, 1, {
+            .to(this.moveP, 1, {
                 x, y,
                 ease: Sine.easeOut,
-                onUpdate(): void {
-                    _this.container.filters = [ _this.instance ];
-                    _this.spriteB.position.set(centerP.x - _this.width / 2 + _this.moveP.x, centerP.y - _this.height / 2 + _this.moveP.y);
-                    _this.spriteBS.position.set(centerP.x - _this.width / 2 + _this.moveP.x, centerP.y - _this.height / 2 + _this.moveP.y);
-                    _this.instance.scale.set(-_this.moveP.x, -_this.moveP.y);
+                onUpdate: (): void => {
+                    this.container.filters = [ this.instance ];
+                    this.spriteB.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
+                    this.spriteBS.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
+                    this.instance.scale.set(-this.moveP.x, -this.moveP.y);
                 }
             });
     }

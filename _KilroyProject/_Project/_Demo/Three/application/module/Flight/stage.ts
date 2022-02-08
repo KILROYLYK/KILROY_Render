@@ -1,4 +1,4 @@
-import Global from '../../constant/_global';
+import Global from '../../../../1/_global';
 import _Stage from '../../interface/stage';
 
 import Renderer from './layout/renderer';

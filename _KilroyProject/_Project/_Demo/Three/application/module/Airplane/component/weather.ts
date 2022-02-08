@@ -2,7 +2,7 @@
 import Tween from '/usr/local/lib/node_modules/@tweenjs/tween.js';
 import * as THREE from 'three';
 
-import Global from '../../../constant/_global';
+import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
 
 /**

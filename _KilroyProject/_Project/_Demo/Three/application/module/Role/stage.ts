@@ -56,7 +56,7 @@ export default class Stage implements _Stage {
             resource = _this.resource.data;
         
         _this.renderer = new Renderer();
-        Global.$Root.append(_this.renderer.instance.domElement);
+        Global.Root.append(_this.renderer.instance.domElement);
         
         _this.scene = new Scene();
         _this.scene.instance.background = resource.cube_bg;
@@ -72,10 +72,10 @@ export default class Stage implements _Stage {
         
         _this.isInit = true;
         
-        Global.FN.resize(() => {
+        Global.Function.Resize(() => {
             _this.update(true);
         });
-        Global.Function.updateFrame(() => {
+        Global.FN.updateFrame(() => {
             _this.update();
         });
     }
