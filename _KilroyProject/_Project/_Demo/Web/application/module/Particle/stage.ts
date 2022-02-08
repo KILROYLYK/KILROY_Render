@@ -1,5 +1,5 @@
-import Global from '../../constant/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Particle from './component/particle';
 
@@ -21,46 +21,40 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = Global.Root.clientWidth;
+        this.canvas.height = Global.Root.clientHeight;
+        Global.Root.append(this.canvas);
         
-        _this.canvas = document.createElement('canvas');
-        _this.canvas.width = Global.Root.clientWidth;
-        _this.canvas.height = Global.Root.clientHeight;
-        Global.Root.append(_this.canvas);
+        this.context = this.canvas.getContext('2d');
         
-        _this.context = _this.canvas.getContext('2d');
-        
-        _this.component.particle = new Particle(_this.context as CanvasRenderingContext2D);
+        this.component.particle = new Particle(this.context as CanvasRenderingContext2D);
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.isInit = true;
+        this.isInit = true;
     
         Global.Function.Resize(() => {
-            _this.update(true);
+            this.update(true);
         });
         Global.FN.updateFrame(() => {
-            _this.update();
+            this.update();
         });
         Global.FN.updateFocus(false);
         
-        _this.component.particle.writeText('♥');
-        _this.component.particle.writeText('KILROY');
+        this.component.particle.writeText('♥');
+        this.component.particle.writeText('KILROY');
     }
     
     /**
@@ -68,15 +62,13 @@ export default class Stage implements _Stage {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.isInit) return;
+        if (!this.isInit) return;
         
         if (isResize) {
-            _this.canvas.width = Global.Root.clientWidth;
-            _this.canvas.height = Global.Root.clientHeight;
+            this.canvas.width = Global.Root.clientWidth;
+            this.canvas.height = Global.Root.clientHeight;
         }
         
-        _this.component.particle.update(isResize);
+        this.component.particle.update(isResize);
     }
 }

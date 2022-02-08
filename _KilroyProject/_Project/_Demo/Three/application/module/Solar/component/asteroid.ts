@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 import Stage from '../stage';
 
 /**
@@ -27,64 +27,56 @@ export default class Asteroid implements Component {
      * @param {THREE.Texture} texture 纹理
      */
     constructor(scene: any, texture: THREE.Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        
-        _this.createPoint();
+        this.createPoint();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.pointB);
-        _this.instance.add(_this.pointS);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.pointB);
+        this.instance.add(this.pointS);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            cycleS = 0.001; // 周期速度
+        const cycleS = 0.001; // 周期速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.pointB.rotateY(cycleS);
-        _this.pointS.rotateY(cycleS * 2);
+        this.pointB.rotateY(cycleS);
+        this.pointS.rotateY(cycleS * 2);
     }
     
     /**
      * 创建点
      */
     private createPoint(): void {
-        const _this = this,
-            d = Stage.trackM;
+        const d = Stage.trackM;
         
-        const pointB = _this.getPoint(_this.trackR, _this.trackR + _this.radius) as any,
-            pointS = _this.getPoint(_this.trackR + d, _this.trackR + _this.radius - d) as any;
+        const pointB = this.getPoint(this.trackR, this.trackR + this.radius) as any,
+            pointS = this.getPoint(this.trackR + d, this.trackR + this.radius - d) as any;
         
-        _this.pointB = new THREE.Points(pointB.geometry, pointB.material);
-        _this.pointS = new THREE.Points(pointS.geometry, pointS.material);
+        this.pointB = new THREE.Points(pointB.geometry, pointB.material);
+        this.pointS = new THREE.Points(pointS.geometry, pointS.material);
     }
     
     /**
@@ -94,16 +86,15 @@ export default class Asteroid implements Component {
      * @return {*} 坐标
      */
     private getPosition(min: number, max: number): any {
-        const _this = this,
-            position = {
-                x: Global.FN.calc.random(-max, max),
-                z: Global.FN.calc.random(-max, max)
+        const position = {
+                x: Global.Function.Calc.random(-max, max),
+                z: Global.Function.Calc.random(-max, max)
             },
             x = Math.pow(position.x, 2),
             z = Math.pow(position.z, 2),
             d = Math.sqrt(x + z);
         
-        if (d > max || d < min) return _this.getPosition(min, max);
+        if (d > max || d < min) return this.getPosition(min, max);
         
         return position;
     }
@@ -115,12 +106,11 @@ export default class Asteroid implements Component {
      * @return {*} 点阵
      */
     private getPoint(min: number, max: number): any {
-        const _this = this,
-            total = 5000,
+        const total = 5000,
             point = [];
         
         for (let i = 0; i < total; i++) {
-            const position = _this.getPosition(min, max);
+            const position = this.getPosition(min, max);
             point.push(position.x, 0, position.z);
         }
         
@@ -128,7 +118,7 @@ export default class Asteroid implements Component {
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(point, 3));
         
         const material = new THREE.PointsMaterial({
-            map: _this.texture,
+            map: this.texture,
             size: 5,
             sizeAttenuation: true,
             transparent: true

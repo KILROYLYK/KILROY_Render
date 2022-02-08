@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 /**
  * 流星
@@ -32,67 +32,59 @@ export default class Meteor implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(_this.moveP.x, _this.moveP.y, _this.moveP.z);
-        _this.instance.rotation.set(_this.lookP.x, _this.lookP.y, _this.lookP.z);
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(this.moveP.x, this.moveP.y, this.moveP.z);
+        this.instance.rotation.set(this.lookP.x, this.lookP.y, this.lookP.z);
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            ease = 15, // 缓冲系数
+        const ease = 15, // 缓冲系数
             mouseS = 0.1; // 鼠标速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        Math.random() > 0.95 && _this.createStar();
+        Math.random() > 0.95 && this.createStar();
         
-        _this.star.forEach((v: THREE.Mesh, i: number, a: THREE.Mesh[]) => {
+        this.star.forEach((v: THREE.Mesh, i: number, a: THREE.Mesh[]) => {
             if (v.position.z < -3000) {
-                _this.star.splice(i, 1);
-                _this.instance.remove(v);
+                this.star.splice(i, 1);
+                this.instance.remove(v);
             }
             v.position.z -= 20;
         });
         
-        _this.moveP.x = -((Global.Focus.x - Global.Function.getDomCenter().x) * mouseS);
+        this.moveP.x = -((Global.Focus.x - Global.FN.getDomCenter().x) * mouseS);
         
-        Global.Function.setEase(_this.instance.position, _this.moveP, ease);
-        Global.Function.setEase(_this.instance.rotation, _this.lookP, ease);
+        Global.FN.setEase(this.instance.position, this.moveP, ease);
+        Global.FN.setEase(this.instance.rotation, this.lookP, ease);
     }
     
     /**
      * 创建星星
      */
     private createStar(): void {
-        const _this = this,
-            spread = 1000; // 扩散范围
+        const spread = 1000; // 扩散范围
         
         const random = THREE.MathUtils.randInt(-spread, spread); // 随机整数
         
@@ -113,7 +105,7 @@ export default class Meteor implements Component {
         cylinder.position.set(random, 0, 0);
         cylinder.rotation.set(Math.PI / 2, 0, 0);
         
-        _this.star.push(cylinder);
-        _this.instance.add(cylinder);
+        this.star.push(cylinder);
+        this.instance.add(cylinder);
     }
 }

@@ -20,53 +20,43 @@ export default class Light implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        
-        _this.createLight();
+        this.createLight();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.lightAmbient);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.lightAmbient);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
     }
     
     /**
      * 创建光源
      */
     private createLight(): void {
-        const _this = this;
-        
-        _this.lightAmbient = new THREE.AmbientLight('#ffffff', 0.1);
-        _this.lightAmbient.position.set(0, 0, 0);
+        this.lightAmbient = new THREE.AmbientLight('#ffffff', 0.1);
+        this.lightAmbient.position.set(0, 0, 0);
     }
 }

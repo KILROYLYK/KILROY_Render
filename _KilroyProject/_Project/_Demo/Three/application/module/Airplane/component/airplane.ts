@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 /**
  * 飞机
@@ -31,77 +31,71 @@ export default class Airplane implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this,
-            track = 1000; // 轨道
+        const track = 1000; // 轨道
         
-        _this.airplane = new THREE.Object3D();
-        _this.airplane.position.set(0, 0, 0);
-        _this.airplane.scale.setScalar(0.6);
+        this.airplane = new THREE.Object3D();
+        this.airplane.position.set(0, 0, 0);
+        this.airplane.scale.setScalar(0.6);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, track + 130, 200);
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, track + 130, 200);
         
-        _this.createBody();
-        _this.createHead();
-        _this.createTail();
-        _this.createWing();
-        _this.createPropeller();
+        this.createBody();
+        this.createHead();
+        this.createTail();
+        this.createWing();
+        this.createPropeller();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.airplane.add(_this.body);
-        _this.airplane.add(_this.head);
-        _this.airplane.add(_this.wing);
-        _this.airplane.add(_this.tail);
-        _this.airplane.add(_this.propeller);
-        _this.instance.add(_this.airplane);
-        _this.scene.add(_this.instance);
+        this.airplane.add(this.body);
+        this.airplane.add(this.head);
+        this.airplane.add(this.wing);
+        this.airplane.add(this.tail);
+        this.airplane.add(this.propeller);
+        this.instance.add(this.airplane);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            ease = 12, // 缓冲系数
+        const ease = 12,
             moveS = 0.5,
-            centerP = Global.Function.getDomCenter(); // 中心位置
+            centerP = Global.FN.getDomCenter(); // 中心位置
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.propeller.rotateX(0.3);
+        this.propeller.rotateX(0.3);
         
-        _this.moveP.x = (Global.Focus.x - centerP.x) * moveS;
-        _this.moveP.y = -(Global.Focus.y - centerP.y) * moveS;
+        this.moveP.x = (Global.Focus.x - centerP.x) * moveS;
+        this.moveP.y = -(Global.Focus.y - centerP.y) * moveS;
         
-        if (_this.moveP.x > 250) _this.moveP.x = 250;
-        if (_this.moveP.x < -250) _this.moveP.x = -250;
-        if (_this.moveP.y > 120) _this.moveP.y = 120;
-        if (_this.moveP.y < -100) _this.moveP.y = -100;
+        if (this.moveP.x > 250) this.moveP.x = 250;
+        if (this.moveP.x < -250) this.moveP.x = -250;
+        if (this.moveP.y > 120) this.moveP.y = 120;
+        if (this.moveP.y < -100) this.moveP.y = -100;
         
-        Global.Function.setEase(_this.airplane.position, _this.moveP, ease);
-        Global.Function.setEase(_this.airplane.rotation, {
-            x: -_this.moveP.y * 0.005,
+        Global.FN.setEase(this.airplane.position, this.moveP, ease);
+        Global.FN.setEase(this.airplane.rotation, {
+            x: -this.moveP.y * 0.005,
             y: 0,
-            z: -_this.moveP.x * 0.002
+            z: -this.moveP.x * 0.002
         }, ease);
     }
     
@@ -109,8 +103,6 @@ export default class Airplane implements Component {
      * 创建机身
      */
     private createBody(): void {
-        const _this = this;
-        
         const bodyG = new THREE.BoxGeometry(
             80, 50, 50,
             1, 1, 1
@@ -192,23 +184,21 @@ export default class Airplane implements Component {
         rightWheel.castShadow = true;
         rightWheel.receiveShadow = true;
         
-        _this.body = new THREE.Group();
-        _this.body.position.set(0, 0, 0);
-        _this.body.add(body);
-        _this.body.add(seat);
-        _this.body.add(windshield);
-        _this.body.add(leftBracket);
-        _this.body.add(rightBracket);
-        _this.body.add(leftWheel);
-        _this.body.add(rightWheel);
+        this.body = new THREE.Group();
+        this.body.position.set(0, 0, 0);
+        this.body.add(body);
+        this.body.add(seat);
+        this.body.add(windshield);
+        this.body.add(leftBracket);
+        this.body.add(rightBracket);
+        this.body.add(leftWheel);
+        this.body.add(rightWheel);
     }
     
     /**
      * 创建机头
      */
     private createHead(): void {
-        const _this = this;
-        
         const headG = new THREE.BoxGeometry(
             20, 50, 50,
             1, 1, 1
@@ -243,18 +233,16 @@ export default class Airplane implements Component {
         drill.castShadow = true;
         drill.receiveShadow = true;
         
-        _this.head = new THREE.Group();
-        _this.head.position.set(0, 0, 0);
-        _this.head.add(head);
-        _this.head.add(drill);
+        this.head = new THREE.Group();
+        this.head.position.set(0, 0, 0);
+        this.head.add(head);
+        this.head.add(drill);
     }
     
     /**
      * 创建机尾
      */
     private createTail(): void {
-        const _this = this;
-        
         const topTG = new THREE.BoxGeometry(
             15, 25, 5,
             1, 1, 1
@@ -306,12 +294,12 @@ export default class Airplane implements Component {
         wheel.castShadow = true;
         wheel.receiveShadow = true;
         
-        _this.tail = new THREE.Group();
-        _this.tail.position.set(0, 0, 0);
-        _this.tail.add(topTail);
-        _this.tail.add(bottomTail);
-        _this.tail.add(bracket);
-        _this.tail.add(wheel);
+        this.tail = new THREE.Group();
+        this.tail.position.set(0, 0, 0);
+        this.tail.add(topTail);
+        this.tail.add(bottomTail);
+        this.tail.add(bracket);
+        this.tail.add(wheel);
     }
     
     /**
@@ -319,8 +307,6 @@ export default class Airplane implements Component {
      * @return {void}
      */
     private createWing(): void {
-        const _this = this;
-        
         const wingG = new THREE.BoxGeometry(
             40, 4, 120,
             1, 1, 1
@@ -355,12 +341,12 @@ export default class Airplane implements Component {
         rightBracket.castShadow = true;
         rightBracket.receiveShadow = true;
         
-        _this.wing = new THREE.Group();
-        _this.wing.position.set(0, 0, 0);
-        _this.wing.add(topWing);
-        _this.wing.add(bottomWing);
-        _this.wing.add(leftBracket);
-        _this.wing.add(rightBracket);
+        this.wing = new THREE.Group();
+        this.wing.position.set(0, 0, 0);
+        this.wing.add(topWing);
+        this.wing.add(bottomWing);
+        this.wing.add(leftBracket);
+        this.wing.add(rightBracket);
     }
     
     /**
@@ -368,8 +354,6 @@ export default class Airplane implements Component {
      * @return {void}
      */
     private createPropeller(): void {
-        const _this = this;
-        
         const bladeG = new THREE.BoxGeometry(
             1, 60, 10,
             1, 1, 1
@@ -386,9 +370,9 @@ export default class Airplane implements Component {
         blade2.castShadow = true;
         blade2.receiveShadow = true;
         
-        _this.propeller = new THREE.Object3D();
-        _this.propeller.position.set(55, 0, 0);
-        _this.propeller.add(blade1);
-        _this.propeller.add(blade2);
+        this.propeller = new THREE.Object3D();
+        this.propeller.position.set(55, 0, 0);
+        this.propeller.add(blade1);
+        this.propeller.add(blade2);
     }
 }

@@ -1,8 +1,8 @@
 // @ts-ignore
 import Tween from '/usr/local/lib/node_modules/@tweenjs/tween.js'; // 动效
 
-import Global from '../../../../1/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Renderer from './layout/renderer';
 import Scene from './layout/scene';
@@ -136,19 +136,17 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(
-            _this.resource.path,
+        this.controller.loader = new Loader(
+            this.resource.path,
             {
-                loaded(index: number, total: number, progress: number) {
+                loaded: (index: number, total: number, progress: number): void => {
                     // console.log(`加载进度：${ index } ${ total } ${ progress }`);
                 },
-                finish(data: any) {
-                    _this.resource.data = data;
+                finish: (data: any): void => {
+                    this.resource.data = data;
                     
-                    _this.create();
-                    _this.init();
+                    this.create();
+                    this.init();
                 }
             }
         );
@@ -159,40 +157,39 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.renderer = new Renderer();
-        Global.$Root.append(_this.renderer.instance.domElement);
+        this.renderer = new Renderer();
+        Global.Root.append(this.renderer.instance.domElement);
         
-        _this.scene = new Scene();
+        this.scene = new Scene();
         
-        _this.camera = new Camera();
+        this.camera = new Camera();
         
-        _this.component.light = new Light(_this.scene);
-        _this.component.panoramic = new Panoramic(_this.scene, resource.image_universe);
-        _this.component.asteroid = new Asteroid(_this.scene, resource.image_asteroid);
+        this.component.light = new Light(this.scene);
+        this.component.panoramic = new Panoramic(this.scene, resource.image_universe);
+        this.component.asteroid = new Asteroid(this.scene, resource.image_asteroid);
         
-        _this.component.sun = new Sun(_this.scene, {
+        this.component.sun = new Sun(this.scene, {
             sun: resource.image_sun,
             ground: resource.image_sunGround,
             fire: resource.image_sunFire
         });
-        _this.component.mercury = new Mercury(_this.scene, resource.image_mercury);
-        _this.component.venus = new Venus(_this.scene, resource.image_venus);
-        _this.component.earth = new Earth(_this.scene, {
+        this.component.mercury = new Mercury(this.scene, resource.image_mercury);
+        this.component.venus = new Venus(this.scene, resource.image_venus);
+        this.component.earth = new Earth(this.scene, {
             earth: resource.image_earth,
             sky: resource.image_earthSky
         });
-        _this.component.moon = new Moon(_this.component.earth.group, resource.image_moon);
-        _this.component.mars = new Mars(_this.scene, resource.image_mars);
-        _this.component.jupiter = new Jupiter(_this.scene, resource.image_jupiter);
-        _this.component.saturn = new Saturn(_this.scene, {
+        this.component.moon = new Moon(this.component.earth.group, resource.image_moon);
+        this.component.mars = new Mars(this.scene, resource.image_mars);
+        this.component.jupiter = new Jupiter(this.scene, resource.image_jupiter);
+        this.component.saturn = new Saturn(this.scene, {
             saturn: resource.image_saturn,
             ring: resource.image_saturnRing
         });
-        _this.component.uranus = new Uranus(_this.scene, resource.image_uranus);
-        _this.component.neptune = new Neptune(_this.scene, resource.image_neptune);
+        this.component.uranus = new Uranus(this.scene, resource.image_uranus);
+        this.component.neptune = new Neptune(this.scene, resource.image_neptune);
     }
     
     /**
@@ -200,15 +197,13 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
+        this.isInit = true;
         
-        _this.isInit = true;
-        
-        Global.FN.resize(() => {
-            _this.update(true);
+        Global.Function.Resize(() => {
+            this.update(true);
         });
-        Global.Function.updateFrame(() => {
-            _this.update();
+        Global.FN.updateFrame(() => {
+            this.update();
         });
     }
     
@@ -218,32 +213,30 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.isInit) return;
+        if (!this.isInit) return;
         
         Tween.update();
         
-        _this.component.asteroid.update();
+        this.component.asteroid.update();
         
-        _this.component.sun.update();
-        _this.component.mercury.update();
-        _this.component.venus.update();
-        _this.component.earth.update();
-        _this.component.moon.update();
-        _this.component.mars.update();
-        _this.component.jupiter.update();
-        _this.component.saturn.update();
-        _this.component.uranus.update();
-        _this.component.neptune.update();
+        this.component.sun.update();
+        this.component.mercury.update();
+        this.component.venus.update();
+        this.component.earth.update();
+        this.component.moon.update();
+        this.component.mars.update();
+        this.component.jupiter.update();
+        this.component.saturn.update();
+        this.component.uranus.update();
+        this.component.neptune.update();
         
-        _this.camera.update(isResize);
-        _this.renderer.update(isResize);
+        this.camera.update(isResize);
+        this.renderer.update(isResize);
         
-        _this.renderer.instance.clear();
-        _this.renderer.instance.render(
-            _this.scene.instance,
-            _this.camera.instance
+        this.renderer.instance.clear();
+        this.renderer.instance.render(
+            this.scene.instance,
+            this.camera.instance
         );
     }
 }

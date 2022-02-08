@@ -20,12 +20,10 @@ export default class Ground implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -33,11 +31,10 @@ export default class Ground implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            matrix = new THREE.Matrix4();
+        const matrix = new THREE.Matrix4();
         
         const geometry = new THREE.CylinderGeometry(
-            _this.radius, _this.radius, 1400,
+            this.radius, this.radius, 1400,
             40, 10
         );
         geometry.applyMatrix4(matrix.makeRotationX(-Math.PI / 2));
@@ -47,11 +44,11 @@ export default class Ground implements Component {
             flatShading: true
         });
         
-        _this.instance = new THREE.Mesh(geometry, material);
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        _this.instance.castShadow = false;
-        _this.instance.receiveShadow = true;
+        this.instance = new THREE.Mesh(geometry, material);
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
+        this.instance.castShadow = false;
+        this.instance.receiveShadow = true;
     }
     
     /**
@@ -59,9 +56,7 @@ export default class Ground implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
     
     /**
@@ -69,10 +64,8 @@ export default class Ground implements Component {
      * @return {void}
      */
     public update(): void {
-        const _this = this;
+        if (!this.instance) return;
         
-        if (!_this.instance) return;
-        
-        _this.instance.rotateZ(0.003);
+        this.instance.rotateZ(0.003);
     }
 }

@@ -1,5 +1,5 @@
-import Global from '../../constant/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import { RandomWeightList } from '../../../../../_Base/Asset/SDK/Function/function';
 import Flame, { FlameConfig } from './component/flame';
@@ -59,10 +59,8 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     //---------- 生命周期 Start ----------//
@@ -71,15 +69,13 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = Global.Root.clientWidth;
+        this.canvas.height = Global.Root.clientHeight;
+        Global.Root.append(this.canvas);
         
-        _this.canvas = document.createElement('canvas');
-        _this.canvas.width = Global.Root.clientWidth;
-        _this.canvas.height = Global.Root.clientHeight;
-        Global.Root.append(_this.canvas);
-        
-        _this.context = _this.canvas.getContext('2d');
-        _this.gradient = _this.context.createLinearGradient(0, 0, _this.depth, 0);
+        this.context = this.canvas.getContext('2d');
+        this.gradient = this.context.createLinearGradient(0, 0, this.depth, 0);
     }
     
     /**
@@ -87,20 +83,18 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.isInit = true;
+        this.isInit = true;
         
         Global.Function.Resize(() => {
-            _this.update(true);
-            _this.initFlame();
+            this.update(true);
+            this.initFlame();
         });
         Global.FN.updateFrame(() => {
-            _this.update();
+            this.update();
         });
         
-        _this.initColor();
-        _this.initFlame();
+        this.initColor();
+        this.initFlame();
     }
     
     /**
@@ -109,26 +103,25 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this,
-            row = Math.floor(Global.Focus.y / _this.flame.size),
-            column = Math.floor(Global.Focus.x / _this.flame.size);
+        const row = Math.floor(Global.Focus.y / this.flame.size),
+            column = Math.floor(Global.Focus.x / this.flame.size);
         
-        if (!_this.isInit) return;
+        if (!this.isInit) return;
         
         if (isResize) {
-            _this.canvas.width = Global.Root.clientWidth;
-            _this.canvas.height = Global.Root.clientHeight;
+            this.canvas.width = Global.Root.clientWidth;
+            this.canvas.height = Global.Root.clientHeight;
         }
         
-        _this.clean();
+        this.clean();
         
-        for (let i = 0, n = _this.flame.list.length; i < n; i++) {
-            const flame = _this.flame.list[i],
-                rowF = _this.flame.table[row],
+        for (let i = 0, n = this.flame.list.length; i < n; i++) {
+            const flame = this.flame.list[i],
+                rowF = this.flame.table[row],
                 columnF = rowF && rowF[column];
             
             if (flame === columnF) flame.depth = 0; // 跟随焦点
-            if (flame.depth === _this.depth) continue;
+            if (flame.depth === this.depth) continue;
             
             flame.update();
         }
@@ -139,9 +132,7 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private clean(): void {
-        const _this = this;
-        
-        _this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
+        this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
     }
     
     //---------- 生命周期 End ----------//
@@ -151,26 +142,24 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private initColor(): void {
-        const _this = this;
-        
-        _this.color.type.forEach((v: any, i: number, a: any[]) => {
-            _this.gradient.addColorStop(v[0], v[1]);
+        this.color.type.forEach((v: any, i: number, a: any[]) => {
+            this.gradient.addColorStop(v[0], v[1]);
         });
-        _this.context.fillStyle = _this.gradient;
-        _this.context.fillRect(0, 0, _this.depth, 1);
-        _this.color.list = Array(_this.depth)
+        this.context.fillStyle = this.gradient;
+        this.context.fillRect(0, 0, this.depth, 1);
+        this.color.list = Array(this.depth)
             .fill(null)
             .map((v: string, i: number, a: any[]) => {
-                const data = _this.context.getImageData(i, 0, 1, 1).data;
+                const data = this.context.getImageData(i, 0, 1, 1).data;
                 
                 let opacity = 1;
                 
-                if (i >= _this.depth - 3) opacity = 0.5;
-                if (i === _this.depth - 1) opacity = 0;
+                if (i >= this.depth - 3) opacity = 0.5;
+                if (i === this.depth - 1) opacity = 0;
                 
                 return 'rgba(' + data[0] + ', ' + data[1] + ', ' + data[2] + ', ' + opacity + ')';
             });
-        _this.clean();
+        this.clean();
     }
     
     /**
@@ -178,40 +167,39 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private initFlame(): void {
-        const _this = this,
-            rowTotal = Math.ceil(Global.Root.clientHeight / _this.flame.size),
-            columnTotal = Math.ceil(Global.Root.clientWidth / _this.flame.size);
+        const rowTotal = Math.ceil(Global.Root.clientHeight / this.flame.size),
+            columnTotal = Math.ceil(Global.Root.clientWidth / this.flame.size);
         
-        _this.flame.list = [];
-        _this.flame.table = Array(rowTotal).fill(Array(columnTotal).fill(null))
+        this.flame.list = [];
+        this.flame.table = Array(rowTotal).fill(Array(columnTotal).fill(null))
             .map((row: any[], iy: number) => {
                 return row.map((column: any, ix: number) => {
                     const config: FlameConfig = {
-                            color: _this.color.list,
-                            shape: _this.flame.shape,
-                            side: _this.side,
-                            depth: _this.color.list.length - 1, // 默认
-                            size: _this.flame.size,
+                            color: this.color.list,
+                            shape: this.flame.shape,
+                            side: this.side,
+                            depth: this.color.list.length - 1, // 默认
+                            size: this.flame.size,
                             position: {
-                                x: ix * _this.flame.size,
-                                y: iy * _this.flame.size
+                                x: ix * this.flame.size,
+                                y: iy * this.flame.size
                             }
                         },
-                        flame = new _this.component.flame(_this.context, config);
+                        flame = new this.component.flame(this.context, config);
                     
-                    _this.flame.list.push(flame);
+                    this.flame.list.push(flame);
                     
                     return flame;
                 });
             });
         
-        Global.Function.Array.traversing(_this.flame.table, (i: number, v: Flame[]) => {
+        Global.Function.Array.traversing(this.flame.table, (i: number, v: Flame[]) => {
             Global.Function.Array.traversing(v, (ii: number, vv: Flame) => {
                 vv.setBrother(
-                    _this.flame.table[i - 1] && _this.flame.table[i - 1][ii],
-                    _this.flame.table[i][ii - 1],
-                    _this.flame.table[i][ii + 1],
-                    _this.flame.table[i + 1] && _this.flame.table[i + 1][ii],
+                    this.flame.table[i - 1] && this.flame.table[i - 1][ii],
+                    this.flame.table[i][ii - 1],
+                    this.flame.table[i][ii + 1],
+                    this.flame.table[i + 1] && this.flame.table[i + 1][ii],
                 );
             });
         });

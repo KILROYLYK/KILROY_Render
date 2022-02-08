@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import Component from '../../../interface/component';
-import Global from '../../../../../1/_global';
+import Global from '../../../constant/_global';
 import Skull from './skull';
 
 // @ts-ignore
@@ -65,47 +65,41 @@ export default class Card implements Component {
      * @param {CardConfig} config 配置
      */
     constructor(config: CardConfig) {
-        const _this = this;
+        this.renderer = config.renderer;
+        this.scene = config.scene;
+        this.camera = config.camera;
+        this.skull = config.skull;
+        this.texture = config.texture;
         
-        _this.renderer = config.renderer;
-        _this.scene = config.scene;
-        _this.camera = config.camera;
-        _this.skull = config.skull;
-        _this.texture = config.texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.createCardRenderer();
+        this.createCardFront();
+        this.createCardBack();
         
-        _this.createCardRenderer();
-        _this.createCardFront();
-        _this.createCardBack();
-        
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.cardScene.add(this.skull.instance);
         
-        _this.cardScene.add(_this.skull.instance);
+        this.composer.addPass(this.passRender);
+        this.composer.addPass(this.passUB);
         
-        _this.composer.addPass(_this.passRender);
-        _this.composer.addPass(_this.passUB);
-        
-        _this.instance.add(_this.frontMesh);
-        _this.instance.add(_this.backMesh);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.frontMesh);
+        this.instance.add(this.backMesh);
+        this.scene.add(this.instance);
     }
     
     /**
@@ -113,15 +107,13 @@ export default class Card implements Component {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        this.skull.instance.rotation.set(-this.camera.rotation.x, -this.camera.rotation.y, 0);
         
-        _this.skull.instance.rotation.set(-_this.camera.rotation.x, -_this.camera.rotation.y, 0);
-        
-        _this.composer.render();
+        this.composer.render();
         
         if (isResize) { // 屏幕变化
-            _this.cardCamera.aspect = _this.aspect;
-            _this.cardCamera.updateProjectionMatrix();
+            this.cardCamera.aspect = this.aspect;
+            this.cardCamera.updateProjectionMatrix();
         }
     }
     
@@ -130,29 +122,27 @@ export default class Card implements Component {
      * @return {void}
      */
     private createCardRenderer(): void {
-        const _this = this;
+        this.cardScene = new THREE.Scene();
+        this.cardScene.background = new THREE.Color('#000000');
         
-        _this.cardScene = new THREE.Scene();
-        _this.cardScene.background = new THREE.Color('#000000');
-        
-        _this.cardCamera = new THREE.PerspectiveCamera(
-            30, _this.aspect, 1, 500
+        this.cardCamera = new THREE.PerspectiveCamera(
+            30, this.aspect, 1, 500
         );
-        _this.cardCamera.position.z = 100;
+        this.cardCamera.position.z = 100;
         
-        _this.passRender = new RenderPass(
-            _this.cardScene,
-            _this.cardCamera
+        this.passRender = new RenderPass(
+            this.cardScene,
+            this.cardCamera
         );
         
-        _this.passUB = new UnrealBloomPass(
-            new THREE.Vector2(Global.$Root.width(), Global.$Root.height()),
+        this.passUB = new UnrealBloomPass(
+            new THREE.Vector2(Global.Root.clientWidth, Global.Root.clientHeight),
             0.8, 1.2, 0.2
         );
-        _this.passUB.renderToScreen = true;
+        this.passUB.renderToScreen = true;
         
-        _this.composer = new EffectComposer(_this.renderer);
-        _this.composer.renderToScreen = false;
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.renderToScreen = false;
     }
     
     /**
@@ -160,30 +150,26 @@ export default class Card implements Component {
      * @return {void}
      */
     private createCardFront(): void {
-        const _this = this,
-            geometry = new THREE.PlaneGeometry(
-                _this.width * _this.scale,
-                _this.height * _this.scale
-            ),
+        const geometry = new THREE.PlaneGeometry(this.width * this.scale, this.height * this.scale),
             material = new THREE.ShaderMaterial({
                 uniforms: {
                     _content: {
-                        value: _this.composer.readBuffer.texture
+                        value: this.composer.readBuffer.texture
                     },
                     _border_1: {
-                        value: _this.texture.card_front
+                        value: this.texture.card_front
                     },
                     _border_2: {
-                        value: _this.texture.color_2
+                        value: this.texture.color_2
                     },
                     _color: {
-                        value: _this.texture.color_1
+                        value: this.texture.color_1
                     },
                     _noise_1: {
-                        value: _this.texture.noise_1
+                        value: this.texture.noise_1
                     },
                     _noise_2: {
-                        value: _this.texture.noise_2
+                        value: this.texture.noise_2
                     }
                 },
                 vertexShader: vertCard,
@@ -191,7 +177,7 @@ export default class Card implements Component {
                 transparent: true,
                 depthWrite: false
             });
-        _this.frontMesh = new THREE.Mesh(geometry, material);
+        this.frontMesh = new THREE.Mesh(geometry, material);
     }
     
     /**
@@ -199,30 +185,26 @@ export default class Card implements Component {
      * @return {void}
      */
     private createCardBack(): void {
-        const _this = this,
-            geometry = new THREE.PlaneGeometry(
-                _this.width * _this.scale,
-                _this.height * _this.scale
-            ),
+        const geometry = new THREE.PlaneGeometry(this.width * this.scale, this.height * this.scale),
             material = new THREE.ShaderMaterial({
                 uniforms: {
                     _content: {
-                        value: _this.texture.card_pattern
+                        value: this.texture.card_pattern
                     },
                     _border_1: {
-                        value: _this.texture.card_back
+                        value: this.texture.card_back
                     },
                     _border_2: {
-                        value: _this.texture.color_2
+                        value: this.texture.color_2
                     },
                     _color: {
-                        value: _this.texture.color_1
+                        value: this.texture.color_1
                     },
                     _noise_1: {
-                        value: _this.texture.noise_1
+                        value: this.texture.noise_1
                     },
                     _noise_2: {
-                        value: _this.texture.noise_2
+                        value: this.texture.noise_2
                     }
                 },
                 vertexShader: vertCard,
@@ -230,7 +212,7 @@ export default class Card implements Component {
                 transparent: true,
                 depthWrite: false
             });
-        _this.backMesh = new THREE.Mesh(geometry, material);
-        _this.backMesh.rotation.set(0, Math.PI, 0);
+        this.backMesh = new THREE.Mesh(geometry, material);
+        this.backMesh.rotation.set(0, Math.PI, 0);
     }
 }

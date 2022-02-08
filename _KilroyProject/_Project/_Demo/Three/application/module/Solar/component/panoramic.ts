@@ -20,44 +20,34 @@ export default class Panoramic implements Component {
      * @param {THREE.Texture} texture 纹理
      */
     constructor(scene: any, texture: THREE.Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
-        // 球型几何体
-        const geometry = new THREE.SphereGeometry(
-            18000, 64, 64
-        );
+        const geometry = new THREE.SphereGeometry(18000, 64, 64);
         geometry.scale(-1, 1, 1);
         geometry.rotateY(-Math.PI / 2); // 视角平行
         
-        // 材料
         const material = new THREE.MeshBasicMaterial({
-            map: _this.texture
+            map: this.texture
         });
         
-        _this.instance = new THREE.Mesh(geometry, material);
-        _this.instance.castShadow = false;
-        _this.instance.receiveShadow = false;
+        this.instance = new THREE.Mesh(geometry, material);
+        this.instance.castShadow = false;
+        this.instance.receiveShadow = false;
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
 }

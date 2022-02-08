@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
+import Global from '../../../constant/_global';
 
 /**
  * 相机
@@ -14,10 +14,8 @@ export default class Camera implements Layout {
      * @constructor Camera
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -25,13 +23,11 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.PerspectiveCamera(
-            60, Global.Function.getDomAspect(), 0.1, 20000
+        this.instance = new THREE.PerspectiveCamera(
+            60, Global.FN.getDomAspect(), 0.1, 20000
         );
-        _this.instance.position.set(0, 0, 300);
-        _this.instance.rotation.set(0, 0, 0);
+        this.instance.position.set(0, 0, 300);
+        this.instance.rotation.set(0, 0, 0);
     }
     
     /**
@@ -39,7 +35,6 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -48,13 +43,11 @@ export default class Camera implements Layout {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
         if (isResize) { // 屏幕变化
-            _this.instance.aspect = Global.Function.getDomAspect();
-            _this.instance.updateProjectionMatrix();
+            this.instance.aspect = Global.FN.getDomAspect();
+            this.instance.updateProjectionMatrix();
         }
     }
 }

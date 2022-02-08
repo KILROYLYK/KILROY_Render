@@ -1,5 +1,5 @@
-import Global from '../../../../1/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Renderer from './layout/renderer';
 import Scene from './layout/scene';
@@ -58,17 +58,15 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(_this.resource.path, {
-            loaded(index: number, total: number, progress: number): void {
+        this.controller.loader = new Loader(this.resource.path, {
+            loaded: (index: number, total: number, progress: number): void => {
                 // console.log(`加载进度：${ index } ${ total } ${ progress }`);
             },
-            finish(data: any): void {
-                _this.resource.data = data;
+            finish: (data: any): void => {
+                this.resource.data = data;
                 
-                _this.create();
-                _this.init();
+                this.create();
+                this.init();
             }
         });
     }
@@ -77,21 +75,20 @@ export default class Stage implements _Stage {
      * 创建
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.renderer = new Renderer();
-        Global.$Root.append(_this.renderer.instance.domElement);
+        this.renderer = new Renderer();
+        Global.Root.append(this.renderer.instance.domElement);
         
-        _this.scene = new Scene();
+        this.scene = new Scene();
         
-        _this.camera = new Camera();
+        this.camera = new Camera();
         
-        _this.component.mountain = new Mountain(_this.scene, resource.image_mountain);
-        _this.component.ground = new Ground(_this.scene);
-        _this.component.star = new Star(_this.scene, resource.image_star);
-        _this.component.meteor = new Meteor(_this.scene);
-        _this.component.spaceship = new Spaceship(_this.scene, {
+        this.component.mountain = new Mountain(this.scene, resource.image_mountain);
+        this.component.ground = new Ground(this.scene);
+        this.component.star = new Star(this.scene, resource.image_star);
+        this.component.meteor = new Meteor(this.scene);
+        this.component.spaceship = new Spaceship(this.scene, {
             engine: resource.image_engine,
             spaceship: resource.obj_spaceship
         });
@@ -101,17 +98,15 @@ export default class Stage implements _Stage {
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.isInit = true;
         
-        _this.isInit = true;
-        
-        Global.FN.resize(() => {
-            _this.update(true);
+        Global.Function.Resize(() => {
+            this.update(true);
         });
-        Global.Function.updateFrame(() => {
-            _this.update();
+        Global.FN.updateFrame(() => {
+            this.update();
         });
-        Global.Function.showCursor(false);
+        Global.FN.showCursor(false);
     }
     
     /**
@@ -119,23 +114,21 @@ export default class Stage implements _Stage {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.isInit) return;
         
-        if (!_this.isInit) return;
+        this.component.mountain.update();
+        this.component.ground.update();
+        this.component.star.update();
+        this.component.meteor.update();
+        this.component.spaceship.update();
         
-        _this.component.mountain.update();
-        _this.component.ground.update();
-        _this.component.star.update();
-        _this.component.meteor.update();
-        _this.component.spaceship.update();
+        this.camera.update(isResize);
+        this.renderer.update(isResize);
         
-        _this.camera.update(isResize);
-        _this.renderer.update(isResize);
-        
-        _this.renderer.instance.clear();
-        _this.renderer.instance.render(
-            _this.scene.instance,
-            _this.camera.instance
+        this.renderer.instance.clear();
+        this.renderer.instance.render(
+            this.scene.instance,
+            this.camera.instance
         );
     }
 }

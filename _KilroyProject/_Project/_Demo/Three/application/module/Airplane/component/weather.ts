@@ -2,7 +2,6 @@
 import Tween from '/usr/local/lib/node_modules/@tweenjs/tween.js';
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
 
 /**
@@ -27,42 +26,36 @@ export default class Weather implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, -850);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, -850);
-        
-        _this.createSun();
-        _this.createMoon();
+        this.createSun();
+        this.createMoon();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.instance.add(this.sun);
+        this.instance.add(this.moon);
+        this.scene.add(this.instance);
         
-        _this.instance.add(_this.sun);
-        _this.instance.add(_this.moon);
-        _this.scene.add(_this.instance);
+        this.switchDay();
         
-        _this.switchDay();
-        
-        Global.$W.bind('keyup', (e: KeyboardEvent) => {
-            (e.code === 'Space') && _this.switchDay();
+        addEventListener('keyup', (e: KeyboardEvent) => {
+            (e.code === 'Space') && this.switchDay();
         });
     }
     
@@ -70,17 +63,13 @@ export default class Weather implements Component {
      * 更新
      */
     public update(): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
     }
     
     /**
      * 创建太阳
      */
     private createSun(): void {
-        const _this = this;
-        
         const geometry = new THREE.SphereGeometry(
             1200, 20, 10
         );
@@ -91,17 +80,15 @@ export default class Weather implements Component {
             flatShading: true
         });
         
-        _this.sun = new THREE.Mesh(geometry, material);
-        _this.sun.name = _this.name;
-        _this.sun.position.set(0, _this.initY, 0);
+        this.sun = new THREE.Mesh(geometry, material);
+        this.sun.name = this.name;
+        this.sun.position.set(0, this.initY, 0);
     }
     
     /**
      * 创建月亮
      */
     private createMoon(): void {
-        const _this = this;
-        
         const geometry = new THREE.SphereGeometry(
             700, 20, 10
         );
@@ -112,17 +99,16 @@ export default class Weather implements Component {
             flatShading: true
         });
         
-        _this.moon = new THREE.Mesh(geometry, material);
-        _this.moon.name = _this.name;
-        _this.moon.position.set(0, _this.initY, 0);
+        this.moon = new THREE.Mesh(geometry, material);
+        this.moon.name = this.name;
+        this.moon.position.set(0, this.initY, 0);
     }
     
     /**
      * 切换昼夜
      */
     private switchDay(): void {
-        const _this = this,
-            tween = Tween.Tween,
+        const tween = Tween.Tween,
             ease = Tween.Easing.Cubic.InOut,
             timeA = 3000, // 动画时间
             timeD = 2000, // 延迟时间
@@ -130,16 +116,16 @@ export default class Weather implements Component {
                 '#ffe1b9',
                 '#000783'
             ],
-            bg = _this.scene.background,
-            fog = _this.scene.fog.color,
-            sun = _this.sun.position,
-            moon = _this.moon.position;
+            bg = this.scene.background,
+            fog = this.scene.fog.color,
+            sun = this.sun.position,
+            moon = this.moon.position;
         
-        if (_this.isSwitch) return;
-        _this.isSwitch = true;
+        if (this.isSwitch) return;
+        this.isSwitch = true;
         
-        if (_this.day) { // 切换到黑夜
-            _this.day = false;
+        if (this.day) { // 切换到黑夜
+            this.day = false;
             
             const bgColor = new THREE.Color(color[1]),
                 tweenBG = new tween(bg)
@@ -174,7 +160,7 @@ export default class Weather implements Component {
             const tweenSun = new tween(sun)
                 .easing(ease)
                 .to({
-                    y: _this.initY
+                    y: this.initY
                 }, timeA)
                 .onComplete(() => {
                     tweenSun.stop();
@@ -193,11 +179,11 @@ export default class Weather implements Component {
                     tweenMoon.stop();
                 })
                 .onStop(() => {
-                    _this.isSwitch = false;
+                    this.isSwitch = false;
                 })
                 .start();
         } else { // 切换到白昼
-            _this.day = true;
+            this.day = true;
             
             const bgColor = new THREE.Color(color[0]),
                 tweenBG = new tween(bg)
@@ -239,14 +225,14 @@ export default class Weather implements Component {
                     tweenSun.stop();
                 })
                 .onStop(() => {
-                    _this.isSwitch = false;
+                    this.isSwitch = false;
                 })
                 .start();
             
             const tweenMoon = new tween(moon)
                 .easing(ease)
                 .to({
-                    y: _this.initY
+                    y: this.initY
                 }, timeA)
                 .onComplete(() => {
                     tweenMoon.stop();

@@ -21,12 +21,10 @@ export default class Light implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -34,13 +32,11 @@ export default class Light implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        
-        _this.createLight();
+        this.createLight();
     }
     
     /**
@@ -48,11 +44,9 @@ export default class Light implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.lightAmbient);
-        _this.instance.add(_this.lightDirectional);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.lightAmbient);
+        this.instance.add(this.lightDirectional);
+        this.scene.add(this.instance);
     }
     
     /**
@@ -60,9 +54,7 @@ export default class Light implements Component {
      * @return {void}
      */
     public update(): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
     }
     
     /**
@@ -70,22 +62,21 @@ export default class Light implements Component {
      * @return {void}
      */
     private createLight(): void {
-        const _this = this,
-            distance = 1000,
+        const distance = 1000,
             size = 2048;
         
-        _this.lightAmbient = new THREE.AmbientLight('#ffffff', 0.1);
-        _this.lightAmbient.position.set(0, 0, 0);
+        this.lightAmbient = new THREE.AmbientLight('#ffffff', 0.1);
+        this.lightAmbient.position.set(0, 0, 0);
         
-        _this.lightDirectional = new THREE.DirectionalLight('#ffffff', 1.5);
-        _this.lightDirectional.position.set(0, 1500, 400);
-        _this.lightDirectional.castShadow = true;
-        _this.lightDirectional.shadow.camera.top = distance;
-        _this.lightDirectional.shadow.camera.left = -distance;
-        _this.lightDirectional.shadow.camera.right = distance;
-        _this.lightDirectional.shadow.camera.bottom = -distance;
-        _this.lightDirectional.shadow.camera.far = 2000;
-        _this.lightDirectional.shadow.mapSize.width = size;
-        _this.lightDirectional.shadow.mapSize.height = size;
+        this.lightDirectional = new THREE.DirectionalLight('#ffffff', 1.5);
+        this.lightDirectional.position.set(0, 1500, 400);
+        this.lightDirectional.castShadow = true;
+        this.lightDirectional.shadow.camera.top = distance;
+        this.lightDirectional.shadow.camera.left = -distance;
+        this.lightDirectional.shadow.camera.right = distance;
+        this.lightDirectional.shadow.camera.bottom = -distance;
+        this.lightDirectional.shadow.camera.far = 2000;
+        this.lightDirectional.shadow.mapSize.width = size;
+        this.lightDirectional.shadow.mapSize.height = size;
     }
 }

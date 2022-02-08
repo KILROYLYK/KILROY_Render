@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
+import Global from '../../../constant/_global';
 
 /**
  * 渲染器
@@ -14,31 +14,26 @@ export default class Renderer implements Layout {
      * @constructor Renderer
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.WebGLRenderer({
+        this.instance = new THREE.WebGLRenderer({
             antialias: true // 抗锯齿
         });
-        _this.instance.setSize(Global.Width, Global.Height);
-        _this.instance.outputEncoding = THREE.sRGBEncoding;
-        _this.instance.shadowMap.enabled = true;
+        this.instance.setSize(Global.Root.clientWidth, Global.Root.clientHeight);
+        this.instance.outputEncoding = THREE.sRGBEncoding;
+        this.instance.shadowMap.enabled = true;
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -46,12 +41,10 @@ export default class Renderer implements Layout {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
         if (isResize) { // 屏幕变化
-            _this.instance.setSize(Global.Width, Global.Height);
+            this.instance.setSize(Global.Root.clientWidth, Global.Root.clientHeight);
         }
     }
 }

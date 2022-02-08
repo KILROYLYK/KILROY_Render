@@ -46,15 +46,13 @@ export default class Loader implements Controller {
      * @param {LoadConfig} config 配置
      */
     constructor(resourceList: ResourceConfig[], config: LoadConfig = {}) {
-        const _this = this;
+        this.resourceList = resourceList;
+        this.total = this.resourceList.length;
+        this.loaded = config.loaded || null;
+        this.finish = config.finish || null;
         
-        _this.resourceList = resourceList;
-        _this.total = _this.resourceList.length;
-        _this.loaded = config.loaded || null;
-        _this.finish = config.finish || null;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -62,7 +60,6 @@ export default class Loader implements Controller {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
     }
     
     /**
@@ -70,16 +67,15 @@ export default class Loader implements Controller {
      * @return {void}
      */
     private async init(): Promise<any> {
-        const _this = this,
-            promiseList = [] as any[];
+        const promiseList = [] as any[];
         
-        _this.resourceList.forEach((v, i, a) => {
-            promiseList.push(v.url ? _this.load(v) : Promise.resolve());
+        this.resourceList.forEach((v, i, a) => {
+            promiseList.push(v.url ? this.load(v) : Promise.resolve());
         });
         
         await Promise.all(promiseList);
         
-        _this.finish && _this.finish(_this.dataList);
+        this.finish && this.finish(this.dataList);
     }
     
     /**
@@ -88,8 +84,7 @@ export default class Loader implements Controller {
      * @return {void}
      */
     private async load(resource: ResourceConfig): Promise<any> {
-        const _this = this,
-            name = resource.name,
+        const name = resource.name,
             url = resource.url,
             onComplete = resource.onComplete;
         
@@ -98,49 +93,49 @@ export default class Loader implements Controller {
         
         if (name.indexOf('image_') > -1) { // 图片
             type = 'Image';
-            !_this.loader.image &&
-            (_this.loader.image = new THREE.TextureLoader());
-            loader = _this.loader.image;
+            !this.loader.image &&
+            (this.loader.image = new THREE.TextureLoader());
+            loader = this.loader.image;
         } else if (name.indexOf('cube_') > -1) { // 图片
             type = 'Cube';
-            !_this.loader.cube &&
-            (_this.loader.cube = new THREE.CubeTextureLoader());
-            loader = _this.loader.cube;
+            !this.loader.cube &&
+            (this.loader.cube = new THREE.CubeTextureLoader());
+            loader = this.loader.cube;
         } else if (name.indexOf('font_') > -1) { // 字体
             // type = 'Font';
-            // !_this.loader.font &&
-            // (_this.loader.font = new THREE.FontLoader());
-            // loader = _this.loader.font;
+            // !this.loader.font &&
+            // (this.loader.font = new THREE.FontLoader());
+            // loader = this.loader.font;
         } else if (name.indexOf('json_') > -1) { // 模型
             type = 'Json';
-            !_this.loader.json &&
-            (_this.loader.json = new THREE.ObjectLoader());
-            loader = _this.loader.json;
+            !this.loader.json &&
+            (this.loader.json = new THREE.ObjectLoader());
+            loader = this.loader.json;
         } else if (name.indexOf('audio_') > -1) {
             type = 'Audio';
-            !_this.loader.audio &&
-            (_this.loader.audio = new THREE.AudioLoader());
-            loader = _this.loader.audio;
+            !this.loader.audio &&
+            (this.loader.audio = new THREE.AudioLoader());
+            loader = this.loader.audio;
         } else if (name.indexOf('svg_') > -1) {
             type = 'SVG';
-            !_this.loader.svg &&
-            (_this.loader.svg = new SVGLoader());
-            loader = _this.loader.svg;
+            !this.loader.svg &&
+            (this.loader.svg = new SVGLoader());
+            loader = this.loader.svg;
         } else if (name.indexOf('obj_') > -1) {
             type = 'OBJ';
-            !_this.loader.obj &&
-            (_this.loader.obj = new OBJLoader());
-            loader = _this.loader.obj;
+            !this.loader.obj &&
+            (this.loader.obj = new OBJLoader());
+            loader = this.loader.obj;
         } else if (name.indexOf('mtl_') > -1) {
             type = 'MTL';
-            !_this.loader.mtl &&
-            (_this.loader.mtl = new MTLLoader());
-            loader = _this.loader.mtl;
+            !this.loader.mtl &&
+            (this.loader.mtl = new MTLLoader());
+            loader = this.loader.mtl;
         } else if (name.indexOf('fbx_') > -1) {
             type = 'FBX';
-            !_this.loader.fbx &&
-            (_this.loader.fbx = new FBXLoader());
-            loader = _this.loader.fbx;
+            !this.loader.fbx &&
+            (this.loader.fbx = new FBXLoader());
+            loader = this.loader.fbx;
         }
         
         if (type === '') return Promise.resolve();
@@ -148,19 +143,19 @@ export default class Loader implements Controller {
         return new Promise((resolve: Function, reject: Function) => {
             loader.load(url,
                 (object: any) => { // 加载完成
-                    _this.dataList[name] = object;
-                    _this.finishTotal++;
+                    this.dataList[name] = object;
+                    this.finishTotal++;
                     onComplete && onComplete();
-                    _this.loaded && _this.loaded(
-                        _this.finish, _this.total,
-                        parseInt(String(_this.finishTotal / _this.total * 100), 10)
+                    this.loaded && this.loaded(
+                        this.finish, this.total,
+                        parseInt(String(this.finishTotal / this.total * 100), 10)
                     );
                     resolve();
                 },
                 (xhr: XMLHttpRequest) => { // 加载进度
                 },
                 (error: any) => { // 加载失败
-                    _this.dataList[name] = '';
+                    this.dataList[name] = '';
                     console.log(`${ type }加载错误：名称-${ name }`);
                     resolve();
                 }

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 /**
  * 山脉
@@ -37,98 +37,87 @@ export default class Mountain implements Component {
      * @param {THREE.Texture} texture 纹理
      */
     constructor(scene: any, texture: THREE.Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(this.moveP.x, this.moveP.y, this.moveP.z);
+        this.instance.rotation.set(this.lookP.x, this.lookP.y, this.lookP.z);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(_this.moveP.x, _this.moveP.y, _this.moveP.z);
-        _this.instance.rotation.set(_this.lookP.x, _this.lookP.y, _this.lookP.z);
-        
-        _this.createLight();
-        _this.createTerrain();
+        this.createLight();
+        this.createTerrain();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.light);
-        _this.instance.add(_this.terrain);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.light);
+        this.instance.add(this.terrain);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            ease = 15, // 缓冲系数
+        const ease = 15, // 缓冲系数
             moveS = 0.1, // 移动速度
             cycleS = 0.0008, // 周期速度
             factor = 1300, // 顶点系数（越大越平缓）
             scale = 300; // 陡峭倍数
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        const geometry = _this.terrain.geometry as any,
+        const geometry = this.terrain.geometry as any,
             position = geometry.attributes.position.array;
         for (let i = 0, n = position.length; i < n; i += 3) {
             const x = (position[i] / factor),
-                y = (position[i + 1] / factor) + _this.cycle;
+                y = (position[i + 1] / factor) + this.cycle;
             
-            position[i + 2] = _this.simplex.noise(x, y) * scale;
+            position[i + 2] = this.simplex.noise(x, y) * scale;
         }
         geometry.attributes.position.needsUpdate = true;
         
-        _this.cycle -= cycleS;
+        this.cycle -= cycleS;
         
-        _this.moveP.x = -((Global.Focus.x - Global.Function.getDomCenter().x) * moveS);
+        this.moveP.x = -((Global.Focus.x - Global.FN.getDomCenter().x) * moveS);
         
-        Global.Function.setEase(_this.instance.position, _this.moveP, ease);
-        Global.Function.setEase(_this.instance.rotation, _this.lookP, ease);
+        Global.FN.setEase(this.instance.position, this.moveP, ease);
+        Global.FN.setEase(this.instance.rotation, this.lookP, ease);
     }
     
     /**
      * 创建光源
      */
     private createLight(): void {
-        const _this = this;
-        
         const color = new THREE.Color();
         color.setHSL(0.038, 0.8, 0.5);
         
-        _this.light = new THREE.PointLight('#ffffff', 1, 1000);
-        _this.light.color = color;
-        _this.light.castShadow = false;
-        _this.light.position.set(0, 500, 0);
+        this.light = new THREE.PointLight('#ffffff', 1, 1000);
+        this.light.color = color;
+        this.light.castShadow = false;
+        this.light.position.set(0, 500, 0);
     }
     
     /**
      * 创建地形
      */
     private createTerrain(): void {
-        const _this = this;
-        
-        _this.texture.wrapT
-            = _this.texture.wrapS
+        this.texture.wrapT
+            = this.texture.wrapS
             = THREE.RepeatWrapping;
         
-        _this.simplex = new SimplexNoise();
+        this.simplex = new SimplexNoise();
         
         const geometry = new THREE.PlaneGeometry(
             12000, 1400, 128, 32
@@ -137,15 +126,15 @@ export default class Mountain implements Component {
         const material = new THREE.MeshPhongMaterial({ // 材料
             color: '#ffffff',
             opacity: 1,
-            map: _this.texture,
+            map: this.texture,
             blending: THREE.NoBlending,
             side: THREE.BackSide,
             transparent: false,
             depthTest: true
         });
         
-        _this.terrain = new THREE.Mesh(geometry, material);
-        _this.terrain.position.set(0, 0, 0);
-        _this.terrain.rotation.set((Math.PI / 2) + 0.8, 0, 0);
+        this.terrain = new THREE.Mesh(geometry, material);
+        this.terrain.position.set(0, 0, 0);
+        this.terrain.rotation.set((Math.PI / 2) + 0.8, 0, 0);
     }
 }

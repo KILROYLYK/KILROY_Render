@@ -1,5 +1,5 @@
-import Global from '../../../../1/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Renderer from './layout/renderer';
 import Scene from './layout/scene';
@@ -69,19 +69,17 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(
-            _this.resource.path,
+        this.controller.loader = new Loader(
+            this.resource.path,
             {
-                loaded(index: number, total: number, progress: number): void {
+                loaded: (index: number, total: number, progress: number): void => {
                     // console.log(`加载进度：${ index } ${ total } ${ progress }`);
                 },
-                finish(data: any): void {
-                    _this.resource.data = data;
+                finish: (data: any): void => {
+                    this.resource.data = data;
                     
-                    _this.create();
-                    _this.init();
+                    this.create();
+                    this.init();
                 }
             }
         );
@@ -91,21 +89,20 @@ export default class Stage implements _Stage {
      * 创建
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.renderer = new Renderer();
-        Global.$Root.append(_this.renderer.instance.domElement);
+        this.renderer = new Renderer();
+        Global.Root.append(this.renderer.instance.domElement);
         
-        _this.scene = new Scene();
-        _this.scene.instance.background = resource.cube_bg;
+        this.scene = new Scene();
+        this.scene.instance.background = resource.cube_bg;
         
-        _this.camera = new Camera();
+        this.camera = new Camera();
         
-        _this.component.light = new Light(_this.scene);
-        _this.component.wave = new Wave(_this.scene);
-        _this.component.ground = new Ground(_this.scene);
-        _this.component.car = new Car(_this.scene, {
+        this.component.light = new Light(this.scene);
+        this.component.wave = new Wave(this.scene);
+        this.component.ground = new Ground(this.scene);
+        this.component.car = new Car(this.scene, {
             bg: resource.cube_bg,
             car: resource.json_car,
             wheel_l1: resource.json_wheel_l1,
@@ -119,15 +116,13 @@ export default class Stage implements _Stage {
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.isInit = true;
         
-        _this.isInit = true;
-        
-        Global.FN.resize(() => {
-            _this.update(true);
+        Global.Function.Resize(() => {
+            this.update(true);
         });
-        Global.Function.updateFrame(() => {
-            _this.update();
+        Global.FN.updateFrame(() => {
+            this.update();
         });
     }
     
@@ -136,21 +131,19 @@ export default class Stage implements _Stage {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.isInit) return;
         
-        if (!_this.isInit) return;
+        this.component.light.update();
+        this.component.wave.update();
+        this.component.car.update();
         
-        _this.component.light.update();
-        _this.component.wave.update();
-        _this.component.car.update();
+        this.camera.update(isResize);
+        this.renderer.update(isResize);
         
-        _this.camera.update(isResize);
-        _this.renderer.update(isResize);
-        
-        _this.renderer.instance.clear();
-        _this.renderer.instance.render(
-            _this.scene.instance,
-            _this.camera.instance
+        this.renderer.instance.clear();
+        this.renderer.instance.render(
+            this.scene.instance,
+            this.camera.instance
         );
     }
 }

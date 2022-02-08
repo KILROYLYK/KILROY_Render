@@ -13,10 +13,8 @@ export default class Scene implements Layout {
      * @constructor Scene
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -24,10 +22,8 @@ export default class Scene implements Layout {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.Scene();
-        _this.instance.background = new THREE.Color('#222222');
+        this.instance = new THREE.Scene();
+        this.instance.background = new THREE.Color('#222222');
     }
     
     /**
@@ -35,6 +31,5 @@ export default class Scene implements Layout {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
     }
 }

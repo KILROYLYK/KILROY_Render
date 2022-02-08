@@ -34,108 +34,94 @@ export default class Saturn implements Component {
      * @param {Texture} texture 纹理
      */
     constructor(scene: any, texture: Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.group = new THREE.Group();
+        this.group.position.set(0, 0, this.trackR);
         
-        _this.group = new THREE.Group();
-        _this.group.position.set(0, 0, _this.trackR);
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
+        this.instance.rotation.set(0, 2 * Math.PI / 8 * 5, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        _this.instance.rotation.set(0, 2 * Math.PI / 8 * 5, 0);
-        
-        _this.createTrack();
-        _this.createPlanet();
-        _this.createRing();
+        this.createTrack();
+        this.createPlanet();
+        this.createRing();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.group.add(this.planet);
+        this.group.add(this.ring);
         
-        _this.group.add(_this.planet);
-        _this.group.add(_this.ring);
-        
-        _this.instance.add(_this.track);
-        _this.instance.add(_this.group);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.track);
+        this.instance.add(this.group);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            cycleS = 0.003; // 周期速度
+        const cycleS = 0.003; // 周期速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.cycle += cycleS / 10;
+        this.cycle += cycleS / 10;
         
-        _this.planet.rotateY(cycleS);
+        this.planet.rotateY(cycleS);
         
-        _this.group.position.x = Math.cos(_this.cycle) * _this.trackR;
-        _this.group.position.z = Math.sin(_this.cycle) * _this.trackR;
-        _this.group.rotateY(-cycleS);
+        this.group.position.x = Math.cos(this.cycle) * this.trackR;
+        this.group.position.z = Math.sin(this.cycle) * this.trackR;
+        this.group.rotateY(-cycleS);
     }
     
     /**
      * 创建轨道
      */
     private createTrack(): void {
-        const _this = this;
-        
-        const geometry = new THREE.RingGeometry(
-            _this.trackR - 1, _this.trackR, 128
-        );
+        const geometry = new THREE.RingGeometry(this.trackR - 1, this.trackR, 128);
         
         const material = new THREE.MeshBasicMaterial({
             color: '#ffffff',
             side: THREE.DoubleSide
         });
         
-        _this.track = new THREE.Mesh(geometry, material);
-        _this.track.rotation.set(Math.PI / 2, 0, 0);
+        this.track = new THREE.Mesh(geometry, material);
+        this.track.rotation.set(Math.PI / 2, 0, 0);
     }
     
     /**
      * 创建星球
      */
     private createPlanet(): void {
-        const _this = this,
-            texture = _this.texture.saturn;
+        const texture = this.texture.saturn;
         
         texture.anisotropy = 4;
         texture.encoding = THREE.sRGBEncoding;
         
-        const geometry = new THREE.SphereBufferGeometry(
-            _this.radius, 64, 64
-        );
+        const geometry = new THREE.SphereBufferGeometry(this.radius, 64, 64);
         
         const material = new THREE.MeshStandardMaterial({
             map: texture,
             roughness: 1
         });
         
-        _this.planet = new THREE.Mesh(geometry, material);
-        _this.planet.position.set(0, 0, 0);
-        _this.planet.castShadow = true;
-        _this.planet.receiveShadow = true;
+        this.planet = new THREE.Mesh(geometry, material);
+        this.planet.position.set(0, 0, 0);
+        this.planet.castShadow = true;
+        this.planet.receiveShadow = true;
     }
     
     
@@ -143,10 +129,9 @@ export default class Saturn implements Component {
      * 创建星环
      */
     private createRing(): void {
-        const _this = this,
-            texture = _this.texture.ring,
-            innerRadius = _this.radius + 50,
-            outerRadius = _this.radius + 350,
+        const texture = this.texture.ring,
+            innerRadius = this.radius + 50,
+            outerRadius = this.radius + 350,
             thetaSegments = 64,
             angle = Math.PI * 2;
         
@@ -200,10 +185,10 @@ export default class Saturn implements Component {
             side: THREE.DoubleSide
         });
         
-        _this.ring = new THREE.Mesh(geometry, material);
-        _this.ring.position.set(0, 0, 0);
-        _this.ring.rotation.set(-Math.PI / 2 - Math.PI / 5, 0, 0);
-        _this.ring.castShadow = true;
-        _this.ring.receiveShadow = true;
+        this.ring = new THREE.Mesh(geometry, material);
+        this.ring.position.set(0, 0, 0);
+        this.ring.rotation.set(-Math.PI / 2 - Math.PI / 5, 0, 0);
+        this.ring.castShadow = true;
+        this.ring.receiveShadow = true;
     }
 }

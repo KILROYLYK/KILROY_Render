@@ -18,20 +18,16 @@ export default class Ground implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
         const geometry = new THREE.RingGeometry(
             0, 1000, 32
         );
@@ -42,20 +38,18 @@ export default class Ground implements Component {
             opacity: 1
         });
         
-        _this.instance = new THREE.Mesh(geometry, material);
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        _this.instance.rotation.set(-Math.PI / 2, 0, 0);
-        _this.instance.castShadow = true;
-        _this.instance.receiveShadow = true;
+        this.instance = new THREE.Mesh(geometry, material);
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
+        this.instance.rotation.set(-Math.PI / 2, 0, 0);
+        this.instance.castShadow = true;
+        this.instance.receiveShadow = true;
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
 }

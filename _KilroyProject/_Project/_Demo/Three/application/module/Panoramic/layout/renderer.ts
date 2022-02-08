@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
+import Global from '../../../constant/_global';
 
 /**
  * 渲染器
@@ -14,10 +14,8 @@ export default class Renderer implements Layout {
      * @constructor Renderer
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -25,15 +23,13 @@ export default class Renderer implements Layout {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.WebGLRenderer({
+        this.instance = new THREE.WebGLRenderer({
             logarithmicDepthBuffer: true
         });
-        _this.instance.setSize(Global.Width, Global.Height);
-        _this.instance.setPixelRatio(Global.W.devicePixelRatio);
-        _this.instance.sortObjects = false;
-        _this.instance.autoClear = false;
+        this.instance.setSize(Global.Root.clientWidth, Global.Root.clientHeight);
+        this.instance.setPixelRatio(devicePixelRatio);
+        this.instance.sortObjects = false;
+        this.instance.autoClear = false;
     }
     
     /**
@@ -41,7 +37,6 @@ export default class Renderer implements Layout {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -50,12 +45,10 @@ export default class Renderer implements Layout {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
-        
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
         if (isResize) { // 屏幕变化
-            _this.instance.setSize(Global.Width, Global.Height);
+            this.instance.setSize(Global.Root.clientWidth, Global.Root.clientHeight);
         }
     }
 }

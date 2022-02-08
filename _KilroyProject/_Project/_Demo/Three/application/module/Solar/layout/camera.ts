@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 // @ts-ignore
 import { Tween, Easing } from '/usr/local/lib/node_modules/@tweenjs/tween.js'; // 动效
 
-import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
+import Global from '../../../constant/_global';
 
 /**
  * 相机
@@ -12,7 +12,7 @@ import Layout from '../../../interface/layout';
 export default class Camera implements Layout {
     private controller: OrbitControls = null; // 控制器
     
-    private setTime: number = 0; // 定时器
+    private setTime: any = 0; // 定时器
     
     public instance: THREE.PerspectiveCamera = null; // 实例
     
@@ -21,10 +21,8 @@ export default class Camera implements Layout {
      * @constructor Camera
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -32,14 +30,10 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.PerspectiveCamera(60, Global.FN.getDomAspect(), 1, 40000);
+        this.instance.position.set(0, 20000, 0);
         
-        _this.instance = new THREE.PerspectiveCamera(
-            60, Global.Function.getDomAspect(), 1, 40000
-        );
-        _this.instance.position.set(0, 20000, 0);
-        
-        _this.createController();
+        this.createController();
     }
     
     /**
@@ -47,9 +41,7 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.switchPosition();
+        this.switchPosition();
     }
     
     /**
@@ -58,15 +50,13 @@ export default class Camera implements Layout {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.instance) return;
         
-        if (!_this.instance) return;
-        
-        _this.controller.update();
+        this.controller.update();
         
         if (isResize) { // 屏幕变化
-            _this.instance.aspect = Global.Function.getDomAspect();
-            _this.instance.updateProjectionMatrix();
+            this.instance.aspect = Global.FN.getDomAspect();
+            this.instance.updateProjectionMatrix();
         }
     }
     
@@ -75,11 +65,9 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private createController(): void {
-        const _this = this;
-        
-        _this.controller = new OrbitControls(_this.instance, Global.$Root[0]);
-        _this.controller.target = new THREE.Vector3(0, 0, 0);
-        _this.controller.enabled = false;
+        this.controller = new OrbitControls(this.instance, Global.Root as HTMLElement);
+        this.controller.target = new THREE.Vector3(0, 0, 0);
+        this.controller.enabled = false;
     }
     
     /**
@@ -87,9 +75,7 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private switchPosition(): void {
-        const _this = this;
-        
-        const tween = new Tween(_this.instance.position)
+        const tween = new Tween(this.instance.position)
             .easing(Easing.Cubic.InOut)
             .delay(5000)
             .to({
@@ -99,17 +85,19 @@ export default class Camera implements Layout {
             }, 3000)
             .onComplete(() => {
                 tween.stop();
-                _this.openRotate();
-                _this.openController();
+                
+                this.openRotate();
+                this.openController();
             })
             .onStop(() => {
-                Global.W.addEventListener('mousedown', () => {
-                    _this.setTime && clearTimeout(_this.setTime);
-                    _this.closeRotate();
+                addEventListener('mousedown', () => {
+                    this.setTime !== 0 && clearTimeout(this.setTime);
+                    this.closeRotate();
                 }, false);
-                Global.W.addEventListener('mouseup', () => {
-                    _this.setTime = setTimeout(() => {
-                        _this.openRotate();
+                addEventListener('mouseup', () => {
+                    this.setTime = setTimeout(() => {
+                        this.setTime = 0;
+                        this.openRotate();
                     }, 10000);
                 }, false);
             })
@@ -121,17 +109,15 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private openController(): void {
-        const _this = this;
-        
-        _this.controller.enabled = true;
-        _this.controller.enableDamping = true;
-        _this.controller.enablePan = false;
-        _this.controller.enableKeys = false;
-        _this.controller.minPolarAngle = Math.PI * 0.3;
-        _this.controller.maxPolarAngle = Math.PI * 0.7;
-        _this.controller.minDistance = 500;
-        _this.controller.maxDistance = 20000;
-        _this.controller.autoRotateSpeed = 0.2;
+        this.controller.enabled = true;
+        this.controller.enableDamping = true;
+        this.controller.enablePan = false;
+        this.controller.enableKeys = false;
+        this.controller.minPolarAngle = Math.PI * 0.3;
+        this.controller.maxPolarAngle = Math.PI * 0.7;
+        this.controller.minDistance = 500;
+        this.controller.maxDistance = 20000;
+        this.controller.autoRotateSpeed = 0.2;
     }
     
     /**
@@ -139,11 +125,9 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private openRotate(): void {
-        const _this = this;
+        if (!this.controller || this.controller.autoRotate) return;
         
-        if (!_this.controller || _this.controller.autoRotate) return;
-        
-        _this.controller.autoRotate = true;
+        this.controller.autoRotate = true;
     }
     
     /**
@@ -151,10 +135,8 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private closeRotate(): void {
-        const _this = this;
+        if (!this.controller || !this.controller.autoRotate) return;
         
-        if (!_this.controller || !_this.controller.autoRotate) return;
-        
-        _this.controller.autoRotate = false;
+        this.controller.autoRotate = false;
     }
 }

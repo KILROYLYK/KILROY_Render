@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 /**
  * 星星
@@ -32,13 +32,11 @@ export default class Star implements Component {
      * @param {THREE.Texture} texture 纹理
      */
     constructor(scene: any, texture: THREE.Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -46,8 +44,7 @@ export default class Star implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            spread = 8000; // 扩散范围
+        const spread = 8000; // 扩散范围
         
         const geometry = new THREE.BoxGeometry() as any,
             position = [];
@@ -66,15 +63,15 @@ export default class Star implements Component {
             size: 64,
             color: '#ffffff',
             opacity: 1,
-            map: _this.texture,
+            map: this.texture,
             blending: THREE.AdditiveBlending,
             transparent: true
         });
         
-        _this.instance = new THREE.Points(geometry, material);
-        _this.instance.name = _this.name;
-        _this.instance.position.set(_this.moveP.x, _this.moveP.y, _this.moveP.z);
-        _this.instance.rotation.set(_this.lookP.x, _this.lookP.y, _this.lookP.z);
+        this.instance = new THREE.Points(geometry, material);
+        this.instance.name = this.name;
+        this.instance.position.set(this.moveP.x, this.moveP.y, this.moveP.z);
+        this.instance.rotation.set(this.lookP.x, this.lookP.y, this.lookP.z);
     }
     
     /**
@@ -82,9 +79,7 @@ export default class Star implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
     
     /**
@@ -92,15 +87,14 @@ export default class Star implements Component {
      * @return {void}
      */
     public update(): void {
-        const _this = this,
-            ease = 15, // 缓冲系数
+        const ease = 15, // 缓冲系数
             mouseS = 0.1; // 鼠标速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.moveP.x = -((Global.Focus.x - Global.Function.getDomCenter().x) * mouseS);
+        this.moveP.x = -((Global.Focus.x - Global.FN.getDomCenter().x) * mouseS);
         
-        Global.Function.setEase(_this.instance.position, _this.moveP, ease);
-        Global.Function.setEase(_this.instance.rotation, _this.lookP, ease);
+        Global.FN.setEase(this.instance.position, this.moveP, ease);
+        Global.FN.setEase(this.instance.rotation, this.lookP, ease);
     }
 }

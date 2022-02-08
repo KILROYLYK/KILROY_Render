@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 export interface Texture { // 纹理
     bg: THREE.CubeTexture // 背景
@@ -35,82 +35,73 @@ export default class Car implements Component {
      * @param {Texture} texture 纹理
      */
     constructor(scene: any, texture: Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        
-        _this.createCar();
-        _this.createWheel();
+        this.createCar();
+        this.createWheel();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.car);
-        _this.instance.add(_this.wheel);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.car);
+        this.instance.add(this.wheel);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            ease = 12, // 缓冲系数
-            turn = Math.PI * _this.turn, // 转向角度
+        const ease = 12, // 缓冲系数
+            turn = Math.PI * this.turn, // 转向角度
             lookP = {
-                x: _this.instance.rotation.x,
-                y: _this.instance.rotation.y + turn,
-                z: _this.instance.rotation.z
+                x: this.instance.rotation.x,
+                y: this.instance.rotation.y + turn,
+                z: this.instance.rotation.z
             };
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.wheel.children.forEach((v, i, a) => {
-            v.children[1].rotateY(-_this.speed);
+        this.wheel.children.forEach((v, i, a) => {
+            v.children[1].rotateY(-this.speed);
             (i === 0 || i === 1) && (v.rotation.set(-Math.PI / 2, 0, Math.PI / 2 + turn));
         });
         
-        Global.Function.setEase(_this.instance.rotation, lookP, ease);
+        Global.FN.setEase(this.instance.rotation, lookP, ease);
     }
     
     /**
      * 创建车
      */
     private createCar(): void {
-        const _this = this;
-        
-        _this.car = _this.texture.car;
-        _this.car.position.set(0, 0, 0);
-        _this.car.rotation.set(0, Math.PI / 2, 0);
-        _this.car.scale.setScalar(0.01);
-        _this.car.castShadow = true;
-        _this.car.receiveShadow = true;
+        this.car = this.texture.car;
+        this.car.position.set(0, 0, 0);
+        this.car.rotation.set(0, Math.PI / 2, 0);
+        this.car.scale.setScalar(0.01);
+        this.car.castShadow = true;
+        this.car.receiveShadow = true;
         
         // 上色
-        const mash = _this.car.children as THREE.Mesh[];
+        const mash = this.car.children as THREE.Mesh[];
         
         // 引擎盖 | 框架
         mash[0].material = new THREE.MeshPhysicalMaterial({
             color: '#000000',
-            envMap: _this.texture.bg,
+            envMap: this.texture.bg,
             metalness: 0.5, // 金属性
             roughness: 0.2, // 粗糙度
             reflectivity: 1 // 反射率
@@ -119,7 +110,7 @@ export default class Car implements Component {
         // 车头 | 车尾 | 车门
         mash[1].material = new THREE.MeshPhysicalMaterial({
             color: '#8d8d8d',
-            envMap: _this.texture.bg,
+            envMap: this.texture.bg,
             metalness: 0,
             roughness: 0,
             reflectivity: 1
@@ -152,7 +143,7 @@ export default class Car implements Component {
         // 车顶 | 车窗
         mash[5].material = new THREE.MeshPhysicalMaterial({
             color: '#000000',
-            envMap: _this.texture.bg,
+            envMap: this.texture.bg,
             metalness: 0,
             roughness: 0,
             reflectivity: 1
@@ -196,11 +187,10 @@ export default class Car implements Component {
      * @return {void}
      */
     private createWheel(): void {
-        const _this = this,
-            texture = _this.texture as any,
+        const texture = this.texture as any,
             wheel = [];
         
-        _this.wheel = new THREE.Group();
+        this.wheel = new THREE.Group();
         
         for (const key in texture) {
             if (key.indexOf('wheel_') > -1) {
@@ -273,7 +263,7 @@ export default class Car implements Component {
                 group.add(g1, g2);
                 group.rotation.set(0, 0, Math.PI / 2);
                 wheel.push(group);
-                _this.wheel.add(group);
+                this.wheel.add(group);
             }
         }
         
@@ -308,11 +298,9 @@ export default class Car implements Component {
      * @return {void}
      */
     public changeSpeed(add: boolean = true): void {
-        const _this = this;
+        add ? this.speed++ : this.speed--;
         
-        add ? _this.speed++ : _this.speed--;
-        
-        _this.speed >= 100 && (_this.speed = 100);
-        _this.speed <= 0 && (_this.speed = 0);
+        this.speed >= 100 && (this.speed = 100);
+        this.speed <= 0 && (this.speed = 0);
     }
 }

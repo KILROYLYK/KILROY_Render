@@ -25,15 +25,13 @@ export default class Panoramic implements Component {
      * @param {Texture} texture 纹理
      */
     constructor(scene: any, texture: Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
+        // this.scene.background = this.texture.cube;
         
-        // _this.scene.background = _this.texture.cube;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -41,9 +39,8 @@ export default class Panoramic implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            image = _this.texture.image,
-            cube = _this.texture.cube;
+        const image = this.texture.image,
+            cube = this.texture.cube;
         
         // 球型几何体
         const geometry = new THREE.SphereGeometry(
@@ -57,8 +54,8 @@ export default class Panoramic implements Component {
             map: image
         });
         
-        _this.instance = new THREE.Mesh(geometry, material);
-        _this.instance.name = _this.name;
+        this.instance = new THREE.Mesh(geometry, material);
+        this.instance.name = this.name;
     }
     
     /**
@@ -66,8 +63,6 @@ export default class Panoramic implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
 }

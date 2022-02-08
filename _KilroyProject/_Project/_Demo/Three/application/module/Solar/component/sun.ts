@@ -41,79 +41,70 @@ export default class Sun implements Component {
      * @param {Texture} texture 纹理
      */
     constructor(scene: any, texture: Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        
-        _this.createLight();
-        _this.createSphere();
-        _this.createHalo();
+        this.createLight();
+        this.createSphere();
+        this.createHalo();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.light);
-        _this.instance.add(_this.sphere);
-        // _this.instance.add(_this.halo);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.light);
+        this.instance.add(this.sphere);
+        // this.instance.add(this.halo);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            cycleS = 0.001; // 周期速度
+        const cycleS = 0.001; // 周期速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.uniform.time.value += cycleS * 10;
+        this.uniform.time.value += cycleS * 10;
         
-        _this.sphere.rotateY(cycleS);
+        this.sphere.rotateY(cycleS);
     }
     
     /**
      * 创建光源
      */
     private createLight(): void {
-        const _this = this,
-            size = 2048;
+        const size = 2048;
         
-        _this.light = new THREE.PointLight('#ffffff', 1.5);
-        _this.light.position.set(0, 0, 0);
-        _this.light.castShadow = true;
-        _this.light.shadow.camera.near = 1;
-        _this.light.shadow.camera.far = 17000;
-        _this.light.shadow.mapSize.width = size;
-        _this.light.shadow.mapSize.height = size;
+        this.light = new THREE.PointLight('#ffffff', 1.5);
+        this.light.position.set(0, 0, 0);
+        this.light.castShadow = true;
+        this.light.shadow.camera.near = 1;
+        this.light.shadow.camera.far = 17000;
+        this.light.shadow.mapSize.width = size;
+        this.light.shadow.mapSize.height = size;
     }
     
     /**
      * 创建球体
      */
     private createSphere(): void {
-        const _this = this,
-            textureGround = _this.texture.ground,
-            textureFire = _this.texture.fire;
+        const textureGround = this.texture.ground,
+            textureFire = this.texture.fire;
         
         textureFire.wrapS
             = textureFire.wrapT
@@ -122,7 +113,7 @@ export default class Sun implements Component {
             = textureGround.wrapT
             = THREE.RepeatWrapping;
         
-        _this.uniform = {
+        this.uniform = {
             fogDensity: {
                 value: 0.45
             },
@@ -143,30 +134,25 @@ export default class Sun implements Component {
             }
         };
         
-        const geometry = new THREE.SphereGeometry(
-            _this.radius, 64, 64
-        );
+        const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
         
         const material = new THREE.ShaderMaterial({
-            uniforms: _this.uniform,
+            uniforms: this.uniform,
             vertexShader: SunVertex,
             fragmentShader: SunFragment
         });
         
-        _this.sphere = new THREE.Mesh(geometry, material);
-        _this.sphere.position.set(0, 0, 0);
+        this.sphere = new THREE.Mesh(geometry, material);
+        this.sphere.position.set(0, 0, 0);
     }
     
     /**
      * 创建光晕
      */
     private createHalo(): void {
-        const _this = this,
-            texture = _this.texture.sun;
+        const texture = this.texture.sun;
         
-        const geometry = new THREE.SphereGeometry(
-            _this.radius + 50, 64, 64
-        );
+        const geometry = new THREE.SphereGeometry(this.radius + 50, 64, 64);
         
         const material = new THREE.MeshStandardMaterial({
             map: texture,
@@ -177,7 +163,7 @@ export default class Sun implements Component {
             transparent: true
         });
         
-        _this.halo = new THREE.Mesh(geometry, material);
-        _this.halo.position.set(0, 0, 0);
+        this.halo = new THREE.Mesh(geometry, material);
+        this.halo.position.set(0, 0, 0);
     }
 }

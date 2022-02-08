@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 export interface Texture { // 纹理
     spaceship: THREE.Object3D // 飞船
@@ -44,51 +44,45 @@ export default class Spaceship implements Component {
      * @param {Texture} texture 纹理
      */
     constructor(scene: any, texture: Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(this.moveP.x, this.moveP.y, this.moveP.z);
+        this.instance.rotation.set(this.lookP.x, this.lookP.y, this.lookP.z);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(_this.moveP.x, _this.moveP.y, _this.moveP.z);
-        _this.instance.rotation.set(_this.lookP.x, _this.lookP.y, _this.lookP.z);
-        
-        _this.createLight();
-        _this.createSpaceship();
-        _this.createEngine();
+        this.createLight();
+        this.createSpaceship();
+        this.createEngine();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
+        this.instance.add(this.light);
+        this.instance.add(this.spaceship);
+        this.instance.add(this.fire);
+        this.scene.add(this.instance);
         
-        _this.instance.add(_this.light);
-        _this.instance.add(_this.spaceship);
-        _this.instance.add(_this.fire);
-        _this.scene.add(_this.instance);
-        
-        Global.$W.bind('wheel', (e: WheelEvent) => {
-            const z = _this.moveP.z;
+        addEventListener('wheel', (e: WheelEvent) => {
+            const z = this.moveP.z;
             let d = z + (e.deltaY | 0);
             d = (d < -20) ? -20 : d;
             d = (d > 20) ? 20 : d;
-            _this.moveP.z = d;
+            this.moveP.z = d;
         });
-        Global.$W.bind('click', (e: MouseEvent) => {
-            _this.createBullet();
+        addEventListener('click', (e: MouseEvent) => {
+            this.createBullet();
         });
     }
     
@@ -96,32 +90,31 @@ export default class Spaceship implements Component {
      * 更新
      */
     public update(): void {
-        const _this = this,
-            ease = 12, // 缓冲系数
+        const ease = 12, // 缓冲系数
             moveS = { // 移动速度
                 x: 0.07,
                 y: 0.06
             },
             lookS = 0.0004, // 视觉速度
-            centerP = Global.Function.getDomCenter(); // 中心位置
+            centerP = Global.FN.getDomCenter(); // 中心位置
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.texture.engine.offset.y -= 0.06;
+        this.texture.engine.offset.y -= 0.06;
         
-        _this.moveP.x = (Global.Focus.x - centerP.x) * moveS.x;
-        _this.moveP.y = -((Global.Focus.y - centerP.y) * moveS.y) - 4;
-        _this.lookP.z = (Global.Focus.x - centerP.x) * lookS;
+        this.moveP.x = (Global.Focus.x - centerP.x) * moveS.x;
+        this.moveP.y = -((Global.Focus.y - centerP.y) * moveS.y) - 4;
+        this.lookP.z = (Global.Focus.x - centerP.x) * lookS;
         
-        Global.Function.setEase(_this.instance.position, _this.moveP, ease);
-        Global.Function.setEase(_this.instance.rotation, _this.lookP, ease);
+        Global.FN.setEase(this.instance.position, this.moveP, ease);
+        Global.FN.setEase(this.instance.rotation, this.lookP, ease);
         
         // 更新子弹
-        _this.bullet.forEach((v: THREE.Mesh, i: number, a: THREE.Mesh[]) => {
-            const cylinder = _this.bullet[i];
+        this.bullet.forEach((v: THREE.Mesh, i: number, a: THREE.Mesh[]) => {
+            const cylinder = this.bullet[i];
             if (cylinder.position.z < -300) {
-                _this.bullet.splice(i, 1);
-                _this.scene.remove(cylinder);
+                this.bullet.splice(i, 1);
+                this.scene.remove(cylinder);
             }
             cylinder.position.z -= 6;
         });
@@ -131,29 +124,24 @@ export default class Spaceship implements Component {
      * 创建光源
      */
     private createLight(): void {
-        const _this = this;
-        
-        _this.light = new THREE.PointLight('#ffffff', 15, 300);
-        _this.light.position.set(0, 100, 0);
+        this.light = new THREE.PointLight('#ffffff', 15, 300);
+        this.light.position.set(0, 100, 0);
     }
     
     /**
      * 创建飞船
      */
     private createSpaceship(): void {
-        const _this = this;
-        
-        _this.spaceship = _this.texture.spaceship;
-        _this.spaceship.position.set(0, 0, 250);
-        _this.spaceship.rotation.set(0, Math.PI, 0);
+        this.spaceship = this.texture.spaceship;
+        this.spaceship.position.set(0, 0, 250);
+        this.spaceship.rotation.set(0, Math.PI, 0);
     }
     
     /**
      * 创建引擎
      */
     private createEngine(): void {
-        const _this = this,
-            engine = _this.texture.engine;
+        const engine = this.texture.engine;
         
         engine.wrapT
             = engine.wrapS
@@ -169,22 +157,21 @@ export default class Spaceship implements Component {
             depthTest: true
         });
         
-        _this.fire = new THREE.Mesh(
+        this.fire = new THREE.Mesh(
             new THREE.CylinderGeometry(
                 0, 0.4, 10,
                 32, 32, true
             ), material
         );
-        _this.fire.position.set(0, 0.4, 257);
-        _this.fire.rotation.set(Math.PI / 2, 0, 0);
+        this.fire.position.set(0, 0.4, 257);
+        this.fire.rotation.set(Math.PI / 2, 0, 0);
     }
     
     /**
      * 创建子弹
      */
     private createBullet(): void {
-        const _this = this,
-            position = _this.instance.position;
+        const position = this.instance.position;
         
         const color = new THREE.Color();
         color.setHSL(Math.random(), 1, .5);
@@ -206,7 +193,7 @@ export default class Spaceship implements Component {
         cylinder.position.set(position.x, position.y, position.z + 250);
         cylinder.rotation.set(11, 0, 0);
         
-        _this.bullet.push(cylinder);
-        _this.scene.add(cylinder);
+        this.bullet.push(cylinder);
+        this.scene.add(cylinder);
     }
 }

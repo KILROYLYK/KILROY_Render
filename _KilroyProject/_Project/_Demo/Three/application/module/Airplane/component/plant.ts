@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import Global from '../../../../../1/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 /**
  * 植物
@@ -28,12 +28,10 @@ export default class Plant implements Component {
      * @param {*} scene 场景
      */
     constructor(scene: any) {
-        const _this = this;
+        this.scene = scene.instance;
         
-        _this.scene = scene.instance;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -41,11 +39,9 @@ export default class Plant implements Component {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
     }
     
     /**
@@ -53,9 +49,7 @@ export default class Plant implements Component {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.scene.add(_this.instance);
+        this.scene.add(this.instance);
     }
     
     /**
@@ -63,19 +57,18 @@ export default class Plant implements Component {
      * @return {void}
      */
     public update(): void {
-        const _this = this,
-            cycleS = 0.003; // 周期速度
+        const cycleS = 0.003; // 周期速度
         
-        if (Math.random() > 0.8) _this.createTree();
-        if (Math.random() > 0.9) _this.createFlower();
+        if (Math.random() > 0.8) this.createTree();
+        if (Math.random() > 0.9) this.createFlower();
         
-        _this.plant = _this.plant.filter((v, i, a) => {
+        this.plant = this.plant.filter((v, i, a) => {
             v.cycle += cycleS;
             v.object.position.x = Math.cos(v.cycle) * v.y;
             v.object.position.y = Math.sin(v.cycle) * v.y;
             v.object.rotation.z = -Math.PI / 2 + v.cycle;
-            if (v.cycle >= Math.PI * (1 - _this.range)) {
-                _this.instance.remove(v.object);
+            if (v.cycle >= Math.PI * (1 - this.range)) {
+                this.instance.remove(v.object);
                 return false;
             }
             return true;
@@ -87,11 +80,10 @@ export default class Plant implements Component {
      * @return {void}
      */
     private createTree(): void {
-        const _this = this,
-            height = 12, // 树干高
-            scale = Global.FN.calc.random(2, 5) * 0.3,
-            y = _this.track + height * scale / 2 - 2,
-            z = _this.getPlantPosition();
+        const height = 12, // 树干高
+            scale = Global.Function.Calc.random(2, 5) * 0.3,
+            y = this.track + height * scale / 2 - 2,
+            z = this.getPlantPosition();
         
         if (z === 0) return;
         
@@ -146,12 +138,12 @@ export default class Plant implements Component {
         treeBox.position.set(0, y, z);
         treeBox.scale.setScalar(scale);
         treeBox.add(tree);
-        _this.plant.push({
-            cycle: Math.PI * _this.range,
+        this.plant.push({
+            cycle: Math.PI * this.range,
             y, z,
             object: treeBox
         });
-        _this.instance.add(treeBox);
+        this.instance.add(treeBox);
     }
     
     /**
@@ -159,8 +151,7 @@ export default class Plant implements Component {
      * @return {void}
      */
     private createFlower(): void {
-        const _this = this,
-            color = [
+        const color = [
                 '#f25346',
                 '#edeb27',
                 '#f5986e',
@@ -168,10 +159,10 @@ export default class Plant implements Component {
                 '#551a8b'
             ],
             petalD = 12,
-            height = Global.FN.calc.random(30, 50) + 2, // 花枝高
-            scale = Global.FN.calc.random(2, 4) * 0.1,
-            y = _this.track + height * scale / 2 - 2,
-            z = _this.getPlantPosition();
+            height = Global.Function.Calc.random(30, 50) + 2, // 花枝高
+            scale = Global.Function.Calc.random(2, 4) * 0.1,
+            y = this.track + height * scale / 2 - 2,
+            z = this.getPlantPosition();
         
         if (z === 0) return;
         
@@ -191,7 +182,7 @@ export default class Plant implements Component {
             1, 1, 1
             ),
             stamenM = new THREE.MeshBasicMaterial({
-                color: color[Global.FN.calc.random(0, 4)]
+                color: color[Global.Function.Calc.random(0, 4)]
             }),
             stamen = new THREE.Mesh(stamenG, stamenM),
             petalG = new THREE.BoxGeometry(
@@ -199,7 +190,7 @@ export default class Plant implements Component {
                 1, 1, 1
             ) as any,
             petalM = new THREE.MeshBasicMaterial({
-                color: color[Global.FN.calc.random(0, 4)]
+                color: color[Global.Function.Calc.random(0, 4)]
             }),
             petalBox = new THREE.Group();
         stamen.position.set(0, 0, 2);
@@ -228,12 +219,12 @@ export default class Plant implements Component {
         flower.scale.setScalar(scale);
         flower.add(trunk);
         flower.add(petalBox);
-        _this.plant.push({
-            cycle: Math.PI * _this.range,
+        this.plant.push({
+            cycle: Math.PI * this.range,
             y, z,
             object: flower
         });
-        _this.instance.add(flower);
+        this.instance.add(flower);
     }
     
     /**
@@ -241,9 +232,8 @@ export default class Plant implements Component {
      * @return {number} z轴位置
      */
     private getPlantPosition(): number {
-        const _this = this,
-            position = Global.FN.calc.random(-350, 500),
-            plant = _this.plant.find((v, i, a) => {
+        const position = Global.Function.Calc.random(-350, 500),
+            plant = this.plant.find((v, i, a) => {
                 return v.cycle < 0.7 && Math.abs(position - v.z) <= 50
             });
         if (plant) {

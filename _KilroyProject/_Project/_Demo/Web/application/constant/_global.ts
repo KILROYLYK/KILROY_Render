@@ -1,6 +1,6 @@
 import _Global from '../../../../_Base/Asset/_Global/_global';
 
-import { Vector2 } from '../interface/_public';
+import { Vector2 } from '../interface/public';
 import Config from './config';
 import FN from './function';
 import Stage from './stage';
@@ -23,9 +23,7 @@ export default class Global {
     
     public static readonly Application: Element = FN.getApplication();
     public static readonly Root: Element = Global.Application.getElementsByClassName('container')[0];
-    public static Width: number = document.body.clientWidth;
-    public static Height: number = document.body.clientHeight;
-    public static Aspect: number = Global.Width / Global.Height;
+    public static Aspect: number = Global.Root.clientWidth / Global.Root.clientHeight;
     public static Center: Vector2 = { x: 0, y: 0 }; // 中心
     public static Focus: Vector2 = { x: 0, y: 0 }; // 焦点
     

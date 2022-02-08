@@ -1,4 +1,4 @@
-import { Vector2, Vector3 } from '../interface/_public';
+import { Vector2, Vector3 } from '../interface/public';
 import Global from './_global';
 
 /**

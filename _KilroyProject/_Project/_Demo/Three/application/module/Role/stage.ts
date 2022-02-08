@@ -1,5 +1,5 @@
-import Global from '../../constant/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Renderer from './layout/renderer';
 import Scene from './layout/scene';
@@ -12,8 +12,7 @@ import Loader from '../../controller/loader';
 export default class Stage implements _Stage {
     private isInit: boolean = false; // 是否初始化
     private readonly resource: any = { // 资源
-        path: [
-        ],
+        path: [],
         data: null // 数据
     };
     private renderer: Renderer = null; // 渲染器
@@ -30,19 +29,17 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(
-            _this.resource.path,
+        this.controller.loader = new Loader(
+            this.resource.path,
             {
-                loaded(index: number, total: number, progress: number): void {
+                loaded: (index: number, total: number, progress: number): void => {
                     // console.log(`加载进度：${ index } ${ total } ${ progress }`);
                 },
-                finish(data: any): void {
-                    _this.resource.data = data;
+                finish: (data: any): void => {
+                    this.resource.data = data;
                     
-                    _this.create();
-                    _this.init();
+                    this.create();
+                    this.init();
                 }
             }
         );
@@ -52,31 +49,28 @@ export default class Stage implements _Stage {
      * 创建
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.renderer = new Renderer();
-        Global.Root.append(_this.renderer.instance.domElement);
+        this.renderer = new Renderer();
+        Global.Root.append(this.renderer.instance.domElement);
         
-        _this.scene = new Scene();
-        _this.scene.instance.background = resource.cube_bg;
+        this.scene = new Scene();
+        this.scene.instance.background = resource.cube_bg;
         
-        _this.camera = new Camera();
+        this.camera = new Camera();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.isInit = true;
+        this.isInit = true;
         
         Global.Function.Resize(() => {
-            _this.update(true);
+            this.update(true);
         });
         Global.FN.updateFrame(() => {
-            _this.update();
+            this.update();
         });
     }
     
@@ -85,17 +79,15 @@ export default class Stage implements _Stage {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.isInit) return;
         
-        if (!_this.isInit) return;
+        this.camera.update(isResize);
+        this.renderer.update(isResize);
         
-        _this.camera.update(isResize);
-        _this.renderer.update(isResize);
-        
-        _this.renderer.instance.clear();
-        _this.renderer.instance.render(
-            _this.scene.instance,
-            _this.camera.instance
+        this.renderer.instance.clear();
+        this.renderer.instance.render(
+            this.scene.instance,
+            this.camera.instance
         );
     }
 }

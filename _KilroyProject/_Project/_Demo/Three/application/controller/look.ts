@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import Global from '../../../1/_global';
+import Global from '../constant/_global';
 import Controller from '../interface/controller';
 
 export interface LookConfig { // 控制器配置
@@ -47,15 +47,13 @@ export default class Look implements Controller {
      * @param {LookConfig} config 配置
      */
     constructor(camera: any, config: LookConfig = {}) {
-        const _this = this;
+        this.camera = camera.instance;
         
-        _this.camera = camera.instance;
+        this.flag.turn = !!config.turn;
+        this.flag.focus = !!config.focus;
         
-        _this.flag.turn = !!config.turn;
-        _this.flag.focus = !!config.focus;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -63,10 +61,8 @@ export default class Look implements Controller {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.targetP = new THREE.Vector3();
-        _this.focusLL.far = _this.camera.far * 2;
+        this.targetP = new THREE.Vector3();
+        this.focusLL.far = this.camera.far * 2;
     }
     
     /**
@@ -74,9 +70,7 @@ export default class Look implements Controller {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
-        
-        _this.switchPlatform();
+        this.switchPlatform();
     }
     
     /**
@@ -84,22 +78,20 @@ export default class Look implements Controller {
      * @return {void}
      */
     public update(): void {
-        const _this = this;
-        
-        if (!_this.camera) return;
+        if (!this.camera) return;
         
         // 获取视角
-        _this.focusLL.lat = Math.max(-_this.focusLL.maxLat, Math.min(_this.focusLL.maxLat, _this.focusLL.lat));
-        _this.focusLL.phi = THREE.MathUtils.degToRad(90 - _this.focusLL.lat);
-        _this.focusLL.theta = THREE.MathUtils.degToRad(_this.focusLL.lon - 90);
+        this.focusLL.lat = Math.max(-this.focusLL.maxLat, Math.min(this.focusLL.maxLat, this.focusLL.lat));
+        this.focusLL.phi = THREE.MathUtils.degToRad(90 - this.focusLL.lat);
+        this.focusLL.theta = THREE.MathUtils.degToRad(this.focusLL.lon - 90);
         
         // 将视觉目标移至视角中心
-        Global.Function.setEase(_this.targetP, {
-            x: Math.sin(_this.focusLL.phi) * Math.cos(_this.focusLL.theta) * _this.focusLL.far,
-            y: Math.cos(_this.focusLL.phi) * _this.focusLL.far,
-            z: Math.sin(_this.focusLL.phi) * Math.sin(_this.focusLL.theta) * _this.focusLL.far
+        Global.FN.setEase(this.targetP, {
+            x: Math.sin(this.focusLL.phi) * Math.cos(this.focusLL.theta) * this.focusLL.far,
+            y: Math.cos(this.focusLL.phi) * this.focusLL.far,
+            z: Math.sin(this.focusLL.phi) * Math.sin(this.focusLL.theta) * this.focusLL.far
         }, 10);
-        _this.flag.turn && _this.camera.lookAt(_this.targetP);  // 转向
+        this.flag.turn && this.camera.lookAt(this.targetP);  // 转向
     }
     
     /**
@@ -107,11 +99,9 @@ export default class Look implements Controller {
      * @return {void}
      */
     private switchPlatform(): void {
-        const _this = this;
-        
-        Global.FN.agent.client() === 'PC'
-            ? _this.mouseMove()
-            : _this.touchMove();
+        Global.Function.Agent.client() === 'PC'
+            ? this.mouseMove()
+            : this.touchMove();
     }
     
     /**
@@ -119,8 +109,7 @@ export default class Look implements Controller {
      * @return {void}
      */
     private mouseMove(): void {
-        const _this = this,
-            mouse = { // 鼠标
+        const mouse = { // 鼠标
                 /**
                  * 按下
                  * @param {MouseEvent} e 焦点对象
@@ -130,8 +119,8 @@ export default class Look implements Controller {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    Global.$W.bind('mousemove', mouse.move);
-                    Global.$W.bind('mouseup', mouse.up);
+                    addEventListener('mousemove', mouse.move);
+                    addEventListener('mouseup', mouse.up);
                 },
                 
                 /**
@@ -145,10 +134,10 @@ export default class Look implements Controller {
                     
                     const movementX = e.movementX || 0,
                         movementY = e.movementY || 0,
-                        speed = _this.camera.fov * _this.speed.click;
+                        speed = this.camera.fov * this.speed.click;
                     
-                    _this.focusLL.lon -= movementX * speed;
-                    _this.focusLL.lat += movementY * speed;
+                    this.focusLL.lon -= movementX * speed;
+                    this.focusLL.lat += movementY * speed;
                 },
                 
                 /**
@@ -159,9 +148,9 @@ export default class Look implements Controller {
                 up: (e: MouseEvent): void => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
-                    Global.$W.bind('mousemove', mouse.move);
-                    Global.$W.bind('mouseup', mouse.up);
+    
+                    addEventListener('mousemove', mouse.move);
+                    addEventListener('mouseup', mouse.up);
                 },
                 
                 /**
@@ -170,16 +159,16 @@ export default class Look implements Controller {
                  * @return {void}
                  */
                 wheel: (e: WheelEvent): void => {
-                    const fov = _this.camera.fov + e.deltaY * _this.speed.wheel;
+                    const fov = this.camera.fov + e.deltaY * this.speed.wheel;
                     
-                    _this.camera.fov = THREE.MathUtils.clamp(fov, 45, 95);
-                    _this.camera.updateProjectionMatrix();
+                    this.camera.fov = THREE.MathUtils.clamp(fov, 45, 95);
+                    this.camera.updateProjectionMatrix();
                 }
             };
         
         // 鼠标事件
-        _this.flag.turn && Global.$W.bind('mousedown', mouse.down); // 转向
-        _this.flag.focus && Global.$W.bind('wheel', mouse.wheel); // 聚焦
+        this.flag.turn && addEventListener('mousedown', mouse.down); // 转向
+        this.flag.focus && addEventListener('wheel', mouse.wheel); // 聚焦
     }
     
     /**
@@ -187,8 +176,7 @@ export default class Look implements Controller {
      * @return {void}
      */
     private touchMove() {
-        const _this = this,
-            touch = { // 触摸
+        const touch = { // 触摸
                 /**
                  * 开始
                  * @param {TouchEvent} e 焦点对象
@@ -199,11 +187,11 @@ export default class Look implements Controller {
                     e.stopPropagation();
                     
                     const t = e.touches[0];
-                    _this.focusP.touchX = t.screenX;
-                    _this.focusP.touchY = t.screenY;
-                    
-                    Global.$W.bind('touchmove', touch.move);
-                    Global.$W.bind('touchend', touch.end);
+                    this.focusP.touchX = t.screenX;
+                    this.focusP.touchY = t.screenY;
+    
+                    addEventListener('touchmove', touch.move);
+                    addEventListener('touchend', touch.end);
                 },
                 
                 /**
@@ -216,11 +204,11 @@ export default class Look implements Controller {
                     e.stopPropagation();
                     
                     const t = e.touches[0];
-                    _this.focusLL.lon -= (t.screenX - _this.focusP.touchX) * _this.speed.touch;
-                    _this.focusLL.lat += (t.screenY - _this.focusP.touchY) * _this.speed.touch;
+                    this.focusLL.lon -= (t.screenX - this.focusP.touchX) * this.speed.touch;
+                    this.focusLL.lat += (t.screenY - this.focusP.touchY) * this.speed.touch;
                     
-                    _this.focusP.touchX = t.screenX;
-                    _this.focusP.touchY = t.screenY;
+                    this.focusP.touchX = t.screenX;
+                    this.focusP.touchY = t.screenY;
                 },
                 
                 /**
@@ -231,13 +219,13 @@ export default class Look implements Controller {
                 end: (e: TouchEvent): void => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
-                    Global.$W.bind('touchmove', touch.move);
-                    Global.$W.bind('touchend', touch.end);
+    
+                    addEventListener('touchmove', touch.move);
+                    addEventListener('touchend', touch.end);
                 }
             };
         
         // 触摸事件
-        _this.flag.turn && Global.$W.bind('touchstart', touch.start); // 转向
+        this.flag.turn && addEventListener('touchstart', touch.start); // 转向
     }
 }

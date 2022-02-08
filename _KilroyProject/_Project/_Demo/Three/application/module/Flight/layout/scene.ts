@@ -13,25 +13,20 @@ export default class Scene implements Layout {
      * @constructor Scene
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.Scene();
+        this.instance = new THREE.Scene();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
     }
 }

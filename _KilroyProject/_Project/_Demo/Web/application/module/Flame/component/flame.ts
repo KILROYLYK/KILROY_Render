@@ -1,5 +1,5 @@
-import Global from '../../../constant/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 import { RandomWeightList } from '../../../../../../_Base/Asset/SDK/Function/function';
 
@@ -45,33 +45,29 @@ export default class Flame implements Component {
      * @param {FlameConfig} config 配置
      */
     constructor(context: CanvasRenderingContext2D, config: FlameConfig) {
-        const _this = this;
+        this.context = context;
         
-        _this.context = context;
+        this.color = config.color;
+        this.shape = config.shape;
+        this.side = config.side;
+        this.size = config.size;
+        this.position = config.position;
+        this.depth = config.depth;
         
-        _this.color = config.color;
-        _this.shape = config.shape;
-        _this.side = config.side;
-        _this.size = config.size;
-        _this.position = config.position;
-        _this.depth = config.depth;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -79,23 +75,22 @@ export default class Flame implements Component {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this,
-            side = Global.Function.Calc.randomWeight(_this.side),
-            brother = _this.brother[side];
+        const side = Global.Function.Calc.randomWeight(this.side),
+            brother = this.brother[side];
         
-        _this.drawFlame();
+        this.drawFlame();
         
-        if (brother && brother.depth < _this.depth) {
+        if (brother && brother.depth < this.depth) {
             const rand = Global.Function.Calc.random(-1, 5);
-            _this.depth = brother.depth + rand;
+            this.depth = brother.depth + rand;
         } else {
-            _this.depth += 1;
+            this.depth += 1;
         }
         
-        if (_this.depth > this.color.length - 1) {
-            _this.depth = this.color.length - 1;
-        } else if (_this.depth <= 0) {
-            _this.depth = 0;
+        if (this.depth > this.color.length - 1) {
+            this.depth = this.color.length - 1;
+        } else if (this.depth <= 0) {
+            this.depth = 0;
         }
     }
     
@@ -103,18 +98,16 @@ export default class Flame implements Component {
      * 绘制火焰
      */
     private drawFlame(): void {
-        const _this = this;
+        this.context.fillStyle = this.color[this.depth];
         
-        _this.context.fillStyle = _this.color[_this.depth];
-        
-        switch (_this.shape) {
+        switch (this.shape) {
             case 'square':
-                _this.context.fillRect(_this.position.x, _this.position.y, _this.size, _this.size);
+                this.context.fillRect(this.position.x, this.position.y, this.size, this.size);
                 break;
             case 'round':
-                _this.context.beginPath();
-                _this.context.arc(_this.position.x, _this.position.y, _this.size / 2, 0, 2 * Math.PI);
-                _this.context.fill();
+                this.context.beginPath();
+                this.context.arc(this.position.x, this.position.y, this.size / 2, 0, 2 * Math.PI);
+                this.context.fill();
                 break;
         }
     }
@@ -127,11 +120,9 @@ export default class Flame implements Component {
      * @param {Flame} bottom 底部元素
      */
     public setBrother(top: Flame, left: Flame, right: Flame, bottom: Flame): void {
-        const _this = this;
-        
-        _this.brother.top = top;
-        _this.brother.left = left;
-        _this.brother.right = right;
-        _this.brother.bottom = bottom;
+        this.brother.top = top;
+        this.brother.left = left;
+        this.brother.right = right;
+        this.brother.bottom = bottom;
     }
 }

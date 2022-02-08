@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import Global from '../../../../../1/_global';
 import Layout from '../../../interface/layout';
+import Global from '../../../constant/_global';
 
 /**
  * 相机
@@ -17,10 +17,8 @@ export default class Camera implements Layout {
      * @constructor Camera
      */
     constructor() {
-        const _this = this;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
@@ -28,14 +26,12 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private create(): void {
-        const _this = this;
-        
-        _this.instance = new THREE.PerspectiveCamera(
-            60, Global.Function.getDomAspect(), 1, 2000
+        this.instance = new THREE.PerspectiveCamera(
+            60, Global.FN.getDomAspect(), 1, 2000
         );
-        _this.instance.position.set(0, 50, 200);
+        this.instance.position.set(0, 50, 200);
         
-        _this.createController();
+        this.createController();
     }
     
     /**
@@ -43,7 +39,6 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -52,15 +47,13 @@ export default class Camera implements Layout {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.instance) return;
         
-        if (!_this.instance) return;
-        
-        _this.controller.update();
+        this.controller.update();
         
         if (isResize) { // 屏幕变化
-            _this.instance.aspect = Global.Function.getDomAspect();
-            _this.instance.updateProjectionMatrix();
+            this.instance.aspect = Global.FN.getDomAspect();
+            this.instance.updateProjectionMatrix();
         }
     }
     
@@ -69,17 +62,15 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private createController(): void {
-        const _this = this;
-        
-        _this.controller = new OrbitControls(_this.instance, Global.$Root[0]);
-        _this.controller.target = new THREE.Vector3(0, 10, 0);
-        _this.controller.enabled = true;
-        _this.controller.enableDamping = true;
-        _this.controller.enablePan = false;
-        _this.controller.enableKeys = false;
-        _this.controller.minPolarAngle = Math.PI * 0.3;
-        _this.controller.maxPolarAngle = Math.PI * 0.5;
-        _this.controller.minDistance = 10;
-        _this.controller.maxDistance = 300;
+        this.controller = new OrbitControls(this.instance, Global.Root as HTMLElement);
+        this.controller.target = new THREE.Vector3(0, 10, 0);
+        this.controller.enabled = true;
+        this.controller.enableDamping = true;
+        this.controller.enablePan = false;
+        this.controller.enableKeys = false;
+        this.controller.minPolarAngle = Math.PI * 0.3;
+        this.controller.maxPolarAngle = Math.PI * 0.5;
+        this.controller.minDistance = 10;
+        this.controller.maxDistance = 300;
     }
 }

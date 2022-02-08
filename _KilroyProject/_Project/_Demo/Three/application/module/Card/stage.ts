@@ -1,5 +1,5 @@
-import Global from '../../../../1/_global';
 import _Stage from '../../interface/stage';
+import Global from '../../constant/_global';
 
 import Renderer from './layout/renderer';
 import Scene from './layout/scene';
@@ -67,19 +67,17 @@ export default class Stage implements _Stage {
      * @constructor Stage
      */
     constructor() {
-        const _this = this;
-        
-        _this.controller.loader = new Loader(
-            _this.resource.path,
+        this.controller.loader = new Loader(
+            this.resource.path,
             {
-                loaded(index: number, total: number, progress: number): void {
-                    // console.log(`加载进度：${ index } ${ total } ${ progress }`);
+                loaded: (index: number, total: number, progress: number): void => {
+                    console.log(`/////加载资源进度：${ index } ${ total } ${ progress }`);
                 },
-                finish(data: any): void {
-                    _this.resource.data = data;
+                finish: (data: any): void => {
+                    this.resource.data = data;
                     
-                    _this.create();
-                    _this.init();
+                    this.create();
+                    this.init();
                 }
             }
         );
@@ -90,26 +88,25 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private create(): void {
-        const _this = this,
-            resource = _this.resource.data;
+        const resource = this.resource.data;
         
-        _this.renderer = new Renderer();
-        Global.$Root.append(_this.renderer.instance.domElement);
+        this.renderer = new Renderer();
+        Global.Root.append(this.renderer.instance.domElement);
         
-        _this.scene = new Scene();
+        this.scene = new Scene();
         
-        _this.camera = new Camera();
+        this.camera = new Camera();
         
-        _this.component.skull = new Skull({
+        this.component.skull = new Skull({
             texture: {
                 skull: resource.obj_skull
             }
         });
-        _this.component.card = new Card({
-            renderer: _this.renderer.instance,
-            scene: _this.scene.instance,
-            camera: _this.camera.instance,
-            skull: _this.component.skull,
+        this.component.card = new Card({
+            renderer: this.renderer.instance,
+            scene: this.scene.instance,
+            camera: this.camera.instance,
+            skull: this.component.skull,
             texture: {
                 card_front: resource.image_card_front,
                 card_back: resource.image_card_back,
@@ -127,15 +124,13 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     private init(): void {
-        const _this = this;
+        this.isInit = true;
         
-        _this.isInit = true;
-        
-        Global.FN.resize(() => {
-            _this.update(true);
+        Global.Function.Resize(() => {
+            this.update(true);
         });
-        Global.Function.updateFrame(() => {
-            _this.update();
+        Global.FN.updateFrame(() => {
+            this.update();
         });
     }
     
@@ -145,20 +140,18 @@ export default class Stage implements _Stage {
      * @return {void}
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        if (!this.isInit) return;
         
-        if (!_this.isInit) return;
+        this.component.skull.update(isResize);
+        this.component.card.update(isResize);
         
-        _this.component.skull.update(isResize);
-        _this.component.card.update(isResize);
+        this.camera.update(isResize);
+        this.renderer.update(isResize);
         
-        _this.camera.update(isResize);
-        _this.renderer.update(isResize);
-        
-        _this.renderer.instance.clear();
-        _this.renderer.instance.render(
-            _this.scene.instance,
-            _this.camera.instance
+        this.renderer.instance.clear();
+        this.renderer.instance.render(
+            this.scene.instance,
+            this.camera.instance
         );
     }
 }

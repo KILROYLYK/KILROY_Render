@@ -27,97 +27,82 @@ export default class Venus implements Component {
      * @param {THREE.Texture} texture 纹理
      */
     constructor(scene: any, texture: THREE.Texture) {
-        const _this = this;
+        this.scene = scene.instance;
+        this.texture = texture;
         
-        _this.scene = scene.instance;
-        _this.texture = texture;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
+        this.instance = new THREE.Group();
+        this.instance.name = this.name;
+        this.instance.position.set(0, 0, 0);
+        this.instance.rotation.set(0, 2 * Math.PI / 8, 0);
         
-        _this.instance = new THREE.Group();
-        _this.instance.name = _this.name;
-        _this.instance.position.set(0, 0, 0);
-        _this.instance.rotation.set(0, 2 * Math.PI / 8, 0);
-        
-        _this.createTrack();
-        _this.createPlanet();
+        this.createTrack();
+        this.createPlanet();
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
-        
-        _this.instance.add(_this.track);
-        _this.instance.add(_this.planet);
-        _this.scene.add(_this.instance);
+        this.instance.add(this.track);
+        this.instance.add(this.planet);
+        this.scene.add(this.instance);
     }
     
     /**
      * 更新
      */
     public update(): void {
-        const _this = this,
-            cycleS = 0.007; // 周期速度
+        const cycleS = 0.007; // 周期速度
         
-        if (!_this.instance) return;
+        if (!this.instance) return;
         
-        _this.cycle += cycleS / 10;
+        this.cycle += cycleS / 10;
         
-        _this.planet.position.x = Math.cos(_this.cycle) * _this.trackR;
-        _this.planet.position.z = Math.sin(_this.cycle) * _this.trackR;
-        _this.planet.rotateY(cycleS);
+        this.planet.position.x = Math.cos(this.cycle) * this.trackR;
+        this.planet.position.z = Math.sin(this.cycle) * this.trackR;
+        this.planet.rotateY(cycleS);
     }
     
     /**
      * 创建轨道
      */
     private createTrack(): void {
-        const _this = this;
-        
-        const geometry = new THREE.RingGeometry(
-            _this.trackR - 1, _this.trackR, 128
-        );
+        const geometry = new THREE.RingGeometry(this.trackR - 1, this.trackR, 128);
         
         const material = new THREE.MeshBasicMaterial({
             color: '#ffffff',
             side: THREE.DoubleSide
         });
         
-        _this.track = new THREE.Mesh(geometry, material);
-        _this.track.rotation.set(Math.PI / 2, 0, 0);
+        this.track = new THREE.Mesh(geometry, material);
+        this.track.rotation.set(Math.PI / 2, 0, 0);
     }
     
     /**
      * 创建星球
      */
     private createPlanet(): void {
-        const _this = this;
+        this.texture.anisotropy = 4;
+        this.texture.encoding = THREE.sRGBEncoding;
         
-        _this.texture.anisotropy = 4;
-        _this.texture.encoding = THREE.sRGBEncoding;
-        
-        const geometry = new THREE.SphereBufferGeometry(
-            _this.radius, 32, 32
-        );
+        const geometry = new THREE.SphereBufferGeometry(this.radius, 32, 32);
         
         const material = new THREE.MeshStandardMaterial({
-            map: _this.texture,
+            map: this.texture,
             roughness: 1
         });
         
-        _this.planet = new THREE.Mesh(geometry, material);
-        _this.planet.position.set(0, 0, _this.trackR);
-        _this.planet.castShadow = true;
-        _this.planet.receiveShadow = true;
+        this.planet = new THREE.Mesh(geometry, material);
+        this.planet.position.set(0, 0, this.trackR);
+        this.planet.castShadow = true;
+        this.planet.receiveShadow = true;
     }
 }

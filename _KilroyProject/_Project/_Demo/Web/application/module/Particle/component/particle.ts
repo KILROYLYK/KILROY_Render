@@ -1,5 +1,5 @@
-import Global from '../../../constant/_global';
 import Component from '../../../interface/component';
+import Global from '../../../constant/_global';
 
 export interface ParticleConfig { // 粒子配置
     show: boolean // 显示
@@ -48,26 +48,22 @@ export default class Particle implements Component {
      * @param {CanvasRenderingContext2D} context 语境
      */
     constructor(context: CanvasRenderingContext2D) {
-        const _this = this;
+        this.context = context;
         
-        _this.context = context;
-        
-        _this.create();
-        _this.init();
+        this.create();
+        this.init();
     }
     
     /**
      * 创建
      */
     private create(): void {
-        const _this = this;
     }
     
     /**
      * 初始化
      */
     private init(): void {
-        const _this = this;
     }
     
     /**
@@ -75,24 +71,22 @@ export default class Particle implements Component {
      * @param {boolean} isResize 是否调整大小
      */
     public update(isResize: boolean = false): void {
-        const _this = this;
+        this.clearCanvas();
         
-        _this.clearCanvas();
-        
-        for (let i = 0, n = _this.list.length; i < n; i++) {
-            const point = _this.list[i];
-            _this.updatePoint(point);
-            _this.drawPoint(point);
+        for (let i = 0, n = this.list.length; i < n; i++) {
+            const point = this.list[i];
+            this.updatePoint(point);
+            this.drawPoint(point);
             if (!point.show && point.opacity === 0) {
-                const index = _this.list.indexOf(point);
-                _this.list.splice(index, 1);
+                const index = this.list.indexOf(point);
+                this.list.splice(index, 1);
                 i--;
                 n--;
             }
         }
         
         if (isResize) {
-            _this.writeText(_this.text);
+            this.writeText(this.text);
         }
     }
     
@@ -100,9 +94,7 @@ export default class Particle implements Component {
      * 清理画布
      */
     private clearCanvas(): void {
-        const _this = this;
-    
-        _this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
+        this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
     }
     
     /**
@@ -110,28 +102,27 @@ export default class Particle implements Component {
      * @param {string} text 文案
      */
     public writeText(text: string): void {
-        const _this = this,
-            width = Global.Root.clientWidth,
+        const width = Global.Root.clientWidth,
             height = Global.Root.clientHeight,
             center = Global.FN.getDomCenter(),
-            cList = _this.list,
+            cList = this.list,
             list = [] as any[];
         
-        _this.clearCanvas();
+        this.clearCanvas();
         
-        _this.text = text;
-        _this.context.fillStyle = '#ffffff';
-        _this.context.font = `${ _this.size }px Times`;
-        _this.context.fillText(
+        this.text = text;
+        this.context.fillStyle = '#ffffff';
+        this.context.font = `${ this.size }px Times`;
+        this.context.fillText(
             text,
-            center.x - _this.context.measureText(text).width / 2,
-            center.y + _this.size / 4,
+            center.x - this.context.measureText(text).width / 2,
+            center.y + this.size / 4,
         );
         
         // 获取画布数据
-        const data = _this.context.getImageData(0, 0, width, height).data;
+        const data = this.context.getImageData(0, 0, width, height).data;
         
-        for (let i = 0; i < data.length; i += _this.density) {
+        for (let i = 0; i < data.length; i += this.density) {
             if (data[i] !== 0 && ~~(Math.random() * 5) === 1) {
                 if (data[i + 4] !== 255 ||
                     data[i - 4] !== 255 ||
@@ -143,7 +134,7 @@ export default class Particle implements Component {
                         y: ~~((i / 4) / width)
                     };
                     
-                    list.push(_this.createPoint(target));
+                    list.push(this.createPoint(target));
                 }
             }
         }
@@ -151,9 +142,9 @@ export default class Particle implements Component {
         const cListL = cList.length,
             listL = list.length;
         if (cListL === 0) {
-            _this.list = list;
+            this.list = list;
         } else if (cListL === listL) {
-            _this.list.forEach((v: ParticleConfig, i: number, a: ParticleConfig[]) => {
+            this.list.forEach((v: ParticleConfig, i: number, a: ParticleConfig[]) => {
                 v.target = list[i].target;
             });
         } else if (cListL < listL) {
@@ -163,7 +154,7 @@ export default class Particle implements Component {
             list.forEach((v: ParticleConfig, i: number, a: ParticleConfig[]) => {
                 cList[i] && (cList[i].target = v.target);
             });
-            _this.list = cList.concat(list.slice(cListL, listL - 1));
+            this.list = cList.concat(list.slice(cListL, listL - 1));
         } else if (cListL > listL) {
             cList.sort(() => {
                 return 0.5 - Math.random();
@@ -199,23 +190,22 @@ export default class Particle implements Component {
      * @param {*} target 目标位置
      */
     private createPoint(target: any): ParticleConfig {
-        const _this = this,
-            sign = [ 1, -1 ]; // 放大或缩小
+        const sign = [ 1, -1 ]; // 放大或缩小
         
         return {
             show: true,
             position: {
-                x: Math.random() * Global.Width,
-                y: Math.random() * Global.Height
+                x: Math.random() * Global.Root.clientWidth,
+                y: Math.random() * Global.Root.clientHeight
             },
             target,
             speed: {
                 x: 0,
                 y: 0
             },
-            color: ~~(Math.random() * _this.color.length),
+            color: ~~(Math.random() * this.color.length),
             opacity: 0,
-            radius: _this.radius.max - Math.random() * _this.radius.min,
+            radius: this.radius.max - Math.random() * this.radius.min,
             direction: sign[~~(Math.random() * 2)] * Math.random() / 10
         }
     }
@@ -225,18 +215,16 @@ export default class Particle implements Component {
      * @param {ParticleConfig} point 点
      */
     private drawPoint(point: ParticleConfig): void {
-        const _this = this;
-        
-        _this.context.beginPath();
-        _this.context.fillStyle = `rgba(${ _this.color[point.color] },${ point.opacity })`;
-        _this.context.arc(
+        this.context.beginPath();
+        this.context.fillStyle = `rgba(${ this.color[point.color] },${ point.opacity })`;
+        this.context.arc(
             point.position.x,
             point.position.y,
             point.radius,
             0,
             Math.PI * 2,
             false);
-        _this.context.fill();
+        this.context.fill();
     }
     
     /**
@@ -244,10 +232,9 @@ export default class Particle implements Component {
      * @param {ParticleConfig} point 点
      */
     private updatePoint(point: ParticleConfig): void {
-        const _this = this,
-            mouseX = Global.Focus.x,
+        const mouseX = Global.Focus.x,
             mouseY = Global.Focus.y,
-            distance = _this.getDistance({
+            distance = this.getDistance({
                 x1: point.position.x,
                 y1: point.position.y,
                 x2: mouseX,
@@ -256,28 +243,28 @@ export default class Particle implements Component {
         
         // 颜色
         point.show
-            ? point.opacity += _this.colorS
-            : point.opacity -= _this.colorS;
+            ? point.opacity += this.colorS
+            : point.opacity -= this.colorS;
         (point.opacity > 1) && (point.opacity = 1);
         (point.opacity < 0) && (point.opacity = 0);
         
         // 半径
-        point.radius += point.direction * _this.radius.speed;
-        (point.radius >= _this.radius.max) && (point.direction *= -1);
+        point.radius += point.direction * this.radius.speed;
+        (point.radius >= this.radius.max) && (point.direction *= -1);
         (point.radius <= 1) && (point.direction *= -1);
         
         // 速度
-        point.speed.x = (point.position.x - point.target.x) / _this.interval;
-        point.speed.y = (point.position.y - point.target.y) / _this.interval;
+        point.speed.x = (point.position.x - point.target.x) / this.interval;
+        point.speed.y = (point.position.y - point.target.y) / this.interval;
         
         // 鼠标推动约束
-        if (distance < _this.mouse.radius) {
-            point.speed.x += point.speed.x - (point.position.x - mouseX) / _this.mouse.speed;
-            point.speed.y += point.speed.y - (point.position.y - mouseY) / _this.mouse.speed;
+        if (distance < this.mouse.radius) {
+            point.speed.x += point.speed.x - (point.position.x - mouseX) / this.mouse.speed;
+            point.speed.y += point.speed.y - (point.position.y - mouseY) / this.mouse.speed;
         }
         
         // 更新位置
-        point.position.x -= point.speed.x * _this.restoreS;
-        point.position.y -= point.speed.y * _this.restoreS;
+        point.position.x -= point.speed.x * this.restoreS;
+        point.position.y -= point.speed.y * this.restoreS;
     }
 }

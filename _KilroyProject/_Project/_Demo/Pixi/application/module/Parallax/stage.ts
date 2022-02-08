@@ -64,15 +64,13 @@ export default class Stage implements _Stage {
         const resource = this.resource.data;
         
         this.app = new PIXI.Application({
-            width: Global.Width,
-            height: Global.Height,
+            width: Global.Root.clientWidth,
+            height: Global.Root.clientHeight,
             backgroundColor: 0x222222,
             backgroundAlpha: 0,
             resizeTo: Global.Root
         });
         
-        console.log(Global.Application);
-        console.log(Global.Root);
         Global.Root.append(this.app.view);
         
         this.container = new PIXI.Container();
@@ -101,6 +99,6 @@ export default class Stage implements _Stage {
     public update(isResize: boolean = false): void {
         if (!this.isInit) return;
         
-        // _this.component.background.update(isResize);
+        // this.component.background.update(isResize);
     }
 }
