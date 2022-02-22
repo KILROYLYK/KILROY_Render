@@ -1,5 +1,5 @@
 // @ts-ignore
-import GSAP from 'gsap';
+import GSAP, { Sine } from 'gsap';
 // @ts-ignore
 import * as PIXI from 'pixi.js';
 
@@ -134,17 +134,16 @@ export default class Background implements Component {
         
         if (Global.Focus.x === e.clientX &&
             Global.Focus.y === e.clientY) return;
-    
-        GSAP.GSAPTween
-            .to(this.moveP, 1, {
-                x, y,
-                ease: GSAP.Sine.easeOut,
-                onUpdate: (): void => {
-                    this.container.filters = [ this.instance ];
-                    this.spriteB.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
-                    this.spriteBS.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
-                    this.instance.scale.set(-this.moveP.x, -this.moveP.y);
-                }
-            });
+        
+        GSAP.to(this.moveP, 1, {
+            x, y,
+            ease: Sine.easeOut,
+            onUpdate: (): void => {
+                this.container.filters = [ this.instance ];
+                this.spriteB.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
+                this.spriteBS.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
+                this.instance.scale.set(-this.moveP.x, -this.moveP.y);
+            }
+        });
     }
 }
