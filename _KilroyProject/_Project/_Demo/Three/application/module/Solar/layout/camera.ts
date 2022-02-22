@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Tween, Easing } from 'tween.ts';
+import Tween from 'tween.ts';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -75,8 +75,8 @@ export default class Camera implements Layout {
      * @return {void}
      */
     private switchPosition(): void {
-        const tween = new Tween(this.instance.position)
-            .easing(Easing.Cubic.InOut)
+        const tween = new Tween.Tween(this.instance.position)
+            .easing(Tween.Easing.Cubic.InOut)
             .delay(5000)
             .to({
                 x: 0,

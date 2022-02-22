@@ -1,9 +1,9 @@
 // @ts-ignore
-import * as PIXI from 'pixi.js';
+import GSAP from 'gsap';
 // @ts-ignore
-import { TweenMax, Sine, Ease } from '/usr/local/lib/node_modules/gsap';
+import * as PIXI from 'pixi.js';
 
-import { Vector2 } from '../../../interface/_interface';
+import { Vector2 } from '../../../interface/public';
 import Component from '../../../interface/component';
 import Global from '../../../constant/_global';
 
@@ -134,11 +134,11 @@ export default class Background implements Component {
         
         if (Global.Focus.x === e.clientX &&
             Global.Focus.y === e.clientY) return;
-        
-        TweenMax
+    
+        GSAP.GSAPTween
             .to(this.moveP, 1, {
                 x, y,
-                ease: Sine.easeOut,
+                ease: GSAP.Sine.easeOut,
                 onUpdate: (): void => {
                     this.container.filters = [ this.instance ];
                     this.spriteB.position.set(centerP.x - this.width / 2 + this.moveP.x, centerP.y - this.height / 2 + this.moveP.y);
