@@ -1,5 +1,5 @@
 // @ts-ignore
-import Tween from '/usr/local/lib/node_modules/@tweenjs/tween.js';
+import Tween from '@tweenjs/tween.js';
 import * as THREE from 'three';
 
 import Component from '../../../interface/component';
