@@ -1,5 +1,5 @@
 // @ts-ignore
-import Tween from '@tweenjs/tween.js';
+import Tween from 'tween.ts';
 import * as THREE from 'three';
 
 import Component from '../../../interface/component';

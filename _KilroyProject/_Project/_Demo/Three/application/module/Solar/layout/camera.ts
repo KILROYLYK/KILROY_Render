@@ -1,7 +1,7 @@
+// @ts-ignore
+import { Tween, Easing } from 'tween.ts';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-// @ts-ignore
-import { Tween, Easing } from '@tweenjs/tween.js';
 
 import Layout from '../../../interface/layout';
 import Global from '../../../constant/_global';

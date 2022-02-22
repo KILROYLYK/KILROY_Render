@@ -1,5 +1,5 @@
 // @ts-ignore
-import Tween from '@tweenjs/tween.js';
+import Tween from 'tween.ts';
 
 import _Stage from '../../interface/stage';
 import Global from '../../constant/_global';
