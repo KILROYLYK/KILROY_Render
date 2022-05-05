@@ -63,7 +63,6 @@ export default class Stage implements _Stage {
         this.init();
     }
     
-    //---------- 生命周期 Start ----------//
     /**
      * 创建
      * @return {void}
@@ -135,8 +134,6 @@ export default class Stage implements _Stage {
         this.context.clearRect(0, 0, Global.Root.clientWidth, Global.Root.clientHeight);
     }
     
-    //---------- 生命周期 End ----------//
-    
     /**
      * 初始化颜色
      * @return {void}
@@ -193,8 +190,8 @@ export default class Stage implements _Stage {
                 });
             });
         
-        Global.Function.Array.traversing(this.flame.table, (i: number, v: Flame[]) => {
-            Global.Function.Array.traversing(v, (ii: number, vv: Flame) => {
+        this.flame.table.forEach((v: Flame[], i: number) => {
+            v.forEach((vv: Flame, ii: number) => {
                 vv.setBrother(
                     this.flame.table[i - 1] && this.flame.table[i - 1][ii],
                     this.flame.table[i][ii - 1],

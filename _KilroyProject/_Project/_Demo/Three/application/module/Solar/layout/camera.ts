@@ -112,7 +112,7 @@ export default class Camera implements Layout {
         this.controller.enabled = true;
         this.controller.enableDamping = true;
         this.controller.enablePan = false;
-        this.controller.enableKeys = false;
+        // this.controller.enableKeys = false;
         this.controller.minPolarAngle = Math.PI * 0.3;
         this.controller.maxPolarAngle = Math.PI * 0.7;
         this.controller.minDistance = 500;
